@@ -1,9 +1,7 @@
 import "./kaboom";
 
 import { loadPlayer } from "./characters/MainCharacter.js";
-import { loadHero } from "./sprite_atlas_jsons/SpriteAtlasLoading.js";
-
-loadSpriteAtlas("sprites/main_char2.png", "code/sprite_atlases/main_char_sa.json");
+import { loadSprites } from "./sprite_atlas_jsons/SpriteAtlasLoading.js";
 
 const player = loadPlayer();
 loadHero();
