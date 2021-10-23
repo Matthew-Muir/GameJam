@@ -6,12 +6,10 @@ loadSprites();
 
 
 const player = new Character("hero", [95, 305], 2, null, true);
-const enemy = new Character("enemy", [540,85],2,"Vhaus", false);
-//const test = new HealthBar(350,310, player.gameObj);
+const enemy = new Character("enemy", [540,85],2,"Vhaus", false, true);
 
 
 enemy.gameObj.flipX(true);
-//enemy.flipX(true);
 //add player selection box
 add([
   sprite("selection_box"),
@@ -20,7 +18,6 @@ add([
   origin("center"),
   z(1)
 ]);
-//add mana mana_crystal
 
 
 add([

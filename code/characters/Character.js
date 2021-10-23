@@ -3,11 +3,12 @@ import { HealthBar } from "./HealthBar.js";
 
 export class Character {
 
-  constructor(spriteName, screenPos, spriteScaling, characterName = "blank", isPlayerCharacter) {
+  constructor(spriteName, screenPos, spriteScaling, characterName, isPlayerCharacter, flipSpriteX = false) {
+
     this.healthBarPosition = isPlayerCharacter ? [340,345] : [20,45];
 
     this.gameObj = add([
-      sprite(spriteName, { anim: "idle" }),
+      sprite(spriteName, { anim: "idle", flipX: flipSpriteX}),
       pos(screenPos[0], screenPos[1]),
       origin("center"),
       z(1),

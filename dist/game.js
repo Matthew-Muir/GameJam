@@ -2395,10 +2395,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/characters/Character.js
   var Character = class {
-    constructor(spriteName, screenPos, spriteScaling, characterName = "blank", isPlayerCharacter) {
+    constructor(spriteName, screenPos, spriteScaling, characterName, isPlayerCharacter, flipSpriteX = false) {
       this.healthBarPosition = isPlayerCharacter ? [340, 345] : [20, 45];
       this.gameObj = add([
-        sprite(spriteName, { anim: "idle" }),
+        sprite(spriteName, { anim: "idle", flipX: flipSpriteX }),
         pos(screenPos[0], screenPos[1]),
         origin("center"),
         z(1),
@@ -2417,7 +2417,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/main.js
   loadSprites();
   var player = new Character("hero", [95, 305], 2, null, true);
-  var enemy = new Character("enemy", [540, 85], 2, "Vhaus", false);
+  var enemy = new Character("enemy", [540, 85], 2, "Vhaus", false, true);
   enemy.gameObj.flipX(true);
   add([
     sprite("selection_box"),
