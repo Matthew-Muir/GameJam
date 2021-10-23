@@ -2370,13 +2370,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/characters/HealthBar.js
   var HealthBar = class {
-    constructor(posX, posY, character) {
-      this.charcter = character;
-      this.healthBar = this.playerHealthBar(posX, posY, character);
+    constructor(posX, posY) {
+      this.healthBar = this.playerHealthBar(posX, posY);
     }
     playerHealthBar(posX, posY, player2) {
       const healthBar = [];
-      for (let i = 0; i < player2.health; i++) {
+      for (let i = 0; i < 12; i++) {
         healthBar[i] = this.createHeartSprite(posX + i * 25, posY);
       }
       return healthBar;
@@ -2393,26 +2392,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
   };
   __name(HealthBar, "HealthBar");
-  var eh01 = add([
-    sprite("heart"),
-    pos(135, 20),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(1.5)
-  ]);
-  var eh02 = add([
-    sprite("heart"),
-    pos(165, 20),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(1.5)
-  ]);
 
   // code/characters/Character.js
   var Character = class {
-    constructor(spriteName, screenPos, spriteScaling, characterName = "blank") {
+    constructor(spriteName, screenPos, spriteScaling, characterName = "blank", isPlayerCharacter) {
+      this.healthBarPosition = isPlayerCharacter ? [340, 345] : [20, 45];
       this.gameObj = add([
         sprite(spriteName, { anim: "idle" }),
         pos(screenPos[0], screenPos[1]),
@@ -2422,7 +2406,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         {
           health: 12,
           mana: 0,
-          name: characterName
+          name: characterName,
+          healthBar: new HealthBar(this.healthBarPosition[0], this.healthBarPosition[1])
         }
       ]);
     }
@@ -2431,9 +2416,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/main.js
   loadSprites();
-  var player = new Character("hero", [95, 305], 2);
-  var enemy = new Character("enemy", [540, 85], 2, "Vhaus");
-  var test = new HealthBar(350, 310, player.gameObj);
+  var player = new Character("hero", [95, 305], 2, null, true);
+  var enemy = new Character("enemy", [540, 85], 2, "Vhaus", false);
   enemy.gameObj.flipX(true);
   add([
     sprite("selection_box"),
