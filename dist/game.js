@@ -2368,151 +2368,31 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(loadSprites, "loadSprites");
 
-  // code/characters/Character.js
-  function addCharacter(spriteName, screenPos, spriteScaling, characterName = "undefined") {
-    const character = add([
-      sprite(spriteName, { anim: "idle" }),
-      pos(screenPos[0], screenPos[1]),
-      origin("center"),
-      z(1),
-      scale(spriteScaling),
-      {
-        health: 6,
-        mana: 0,
-        name: characterName
-      }
-    ]);
-    return character;
-  }
-  __name(addCharacter, "addCharacter");
-
-  // code/main.js
-  loadSprites();
-  var player = addCharacter("hero", [95, 305], 2);
-  var enemy = addCharacter("enemy", [540, 85], 2, "Vhaus");
-  function createHeartSprite(posX, posY) {
-    const heart = add([
-      sprite("heart"),
-      pos(posX, posY),
-      scale(1),
-      origin("center"),
-      z(1),
-      scale(1.5)
-    ]);
-  }
-  __name(createHeartSprite, "createHeartSprite");
-  function playerHealthBar(posX, posY, player2) {
-    const healthBar = [];
-    for (let i = 0; i < player2.health; i++) {
-      healthBar[i] = createHeartSprite(posX + i * 30, posY);
+  // code/characters/HealthBar.js
+  var HealthBar = class {
+    constructor(posX, posY, character) {
+      this.charcter = character;
+      this.healthBar = this.playerHealthBar(posX, posY, character);
     }
-  }
-  __name(playerHealthBar, "playerHealthBar");
-  playerHealthBar(460, 310, player);
-  enemy.flipX(true);
-  add([
-    sprite("selection_box"),
-    pos(320, 415),
-    scale(4, 2.5),
-    origin("center"),
-    z(1)
-  ]);
-  var pmc01 = add([
-    sprite("mana_crystal"),
-    pos(285, 340),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
-  var pmc02 = add([
-    sprite("mana_crystal"),
-    pos(310, 340),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
-  var pmc03 = add([
-    sprite("mana_crystal"),
-    pos(335, 340),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
-  var pmc04 = add([
-    sprite("mana_crystal"),
-    pos(360, 340),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
-  var pmc05 = add([
-    sprite("mana_crystal"),
-    pos(385, 340),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
-  var pmc06 = add([
-    sprite("mana_crystal"),
-    pos(410, 340),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
-  var emc01 = add([
-    sprite("mana_crystal"),
-    pos(133, 53),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
-  var emc02 = add([
-    sprite("mana_crystal"),
-    pos(163, 53),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
-  var emc03 = add([
-    sprite("mana_crystal"),
-    pos(193, 53),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
-  var emc04 = add([
-    sprite("mana_crystal"),
-    pos(223, 53),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
-  var emc05 = add([
-    sprite("mana_crystal"),
-    pos(253, 53),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
-  var emc06 = add([
-    sprite("mana_crystal"),
-    pos(283, 53),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(0.8)
-  ]);
+    playerHealthBar(posX, posY, player2) {
+      const healthBar = [];
+      for (let i = 0; i < player2.health; i++) {
+        healthBar[i] = this.createHeartSprite(posX + i * 25, posY);
+      }
+      return healthBar;
+    }
+    createHeartSprite(posX, posY) {
+      const heart = add([
+        sprite("heart"),
+        pos(posX, posY),
+        scale(1),
+        origin("center"),
+        z(1),
+        scale(1.25)
+      ]);
+    }
+  };
+  __name(HealthBar, "HealthBar");
   var eh01 = add([
     sprite("heart"),
     pos(135, 20),
@@ -2529,41 +2409,41 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     z(1),
     scale(1.5)
   ]);
-  var eh03 = add([
-    sprite("heart"),
-    pos(195, 20),
-    scale(1),
+
+  // code/characters/Character.js
+  var Character = class {
+    constructor(spriteName, screenPos, spriteScaling, characterName = "blank") {
+      this.gameObj = add([
+        sprite(spriteName, { anim: "idle" }),
+        pos(screenPos[0], screenPos[1]),
+        origin("center"),
+        z(1),
+        scale(spriteScaling),
+        {
+          health: 12,
+          mana: 0,
+          name: characterName
+        }
+      ]);
+    }
+  };
+  __name(Character, "Character");
+
+  // code/main.js
+  loadSprites();
+  var player = new Character("hero", [95, 305], 2);
+  var enemy = new Character("enemy", [540, 85], 2, "Vhaus");
+  var test = new HealthBar(350, 310, player.gameObj);
+  enemy.gameObj.flipX(true);
+  add([
+    sprite("selection_box"),
+    pos(320, 415),
+    scale(4, 2.5),
     origin("center"),
-    z(1),
-    scale(1.5)
-  ]);
-  var eh04 = add([
-    sprite("heart"),
-    pos(225, 20),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(1.5)
-  ]);
-  var eh05 = add([
-    sprite("heart"),
-    pos(255, 20),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(1.5)
-  ]);
-  var eh06 = add([
-    sprite("heart"),
-    pos(285, 20),
-    scale(1),
-    origin("center"),
-    z(1),
-    scale(1.5),
-    opacity(1)
+    z(1)
   ]);
   add([
-    text(enemy.name, { size: 22 }),
+    text(enemy.gameObj.name, { size: 22 }),
     pos(22, 8)
   ]);
   var btn = add([
