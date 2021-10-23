@@ -1,40 +1,43 @@
 import "./kaboom";
-
-import { loadPlayer } from "./characters/MainCharacter.js";
 import { loadSprites } from "./sprite_atlas_jsons/SpriteAtlasLoading.js";
+import { addCharacter } from "./characters/Character.js"
 
-const player = loadPlayer();
-loadHero();
+loadSprites();
+
+
+const player = addCharacter("hero", [95, 305], 2);
+const enemy = addCharacter("enemy", [540,85],2,"Vhaus");
+
 
 function createHeartSprite(posX, posY) {
   const heart = add([
-  sprite("heart"),
-  pos(posX, posY),
-  scale(1),
-  origin("center"),
-  z(1),
-  scale(1.5),
-]);
+    sprite("heart"),
+    pos(posX, posY),
+    scale(1),
+    origin("center"),
+    z(1),
+    scale(1.5),
+  ]);
 }
 
 function playerHealthBar(posX, posY, player) {
   const healthBar = [];
-  for(let i = 0;  i < player.health; i++){
-    healthBar[i] = createHeartSprite(posX  + (i * 30), posY);
+  for (let i = 0; i < player.health; i++) {
+    healthBar[i] = createHeartSprite(posX + (i * 30), posY);
   }
 }
 playerHealthBar(460, 310, player);
 
-const enemy = add([
-  sprite("enemy", { anim: "idle" }),
-  pos(540, 85),
-  z(1),
-  scale(2),
-  origin("center"),
-  {
-    name: "Vhaus"
-  }
-]);
+// const enemy = add([
+//   sprite("enemy", { anim: "idle" }),
+//   pos(540, 85),
+//   z(1),
+//   scale(2),
+//   origin("center"),
+//   {
+//     name: "Vhaus"
+//   }
+// ]);
 
 enemy.flipX(true);
 //add player selection box

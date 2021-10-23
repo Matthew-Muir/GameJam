@@ -2358,36 +2358,38 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     background: [212, 207, 210]
   });
 
-  // code/characters/MainCharacter.js
-  var player = add([
-    sprite("hero", { anim: "idle" }),
-    pos(95, 305),
-    origin("center"),
-    z(1),
-    scale(2),
-    {
-      health: 6,
-      mana: 0
-    }
-  ]);
-  function loadPlayer() {
-    return player;
-  }
-  __name(loadPlayer, "loadPlayer");
-
   // code/sprite_atlas_jsons/SpriteAtlasLoading.js
-  function loadHero() {
+  function loadSprites() {
     loadSpriteAtlas("sprites/main_char2.png", "code/sprite_atlas_jsons/main_char_sa.json");
     loadSpriteAtlas("sprites/battle_screen.png", "code/sprite_atlas_jsons/battle_screen_sa.json");
     loadSpriteAtlas("sprites/items.png", "code/sprite_atlas_jsons/items_sa.json");
     loadSprite("heart", "sprites/heart.png");
     loadSpriteAtlas("sprites/wizard_idle.png", "code/sprite_atlas_jsons/enemy_sa.json");
   }
-  __name(loadHero, "loadHero");
+  __name(loadSprites, "loadSprites");
+
+  // code/characters/Character.js
+  function addCharacter(spriteName, screenPos, spriteScaling, characterName = "undefined") {
+    const character = add([
+      sprite(spriteName, { anim: "idle" }),
+      pos(screenPos[0], screenPos[1]),
+      origin("center"),
+      z(1),
+      scale(spriteScaling),
+      {
+        health: 6,
+        mana: 0,
+        name: characterName
+      }
+    ]);
+    return character;
+  }
+  __name(addCharacter, "addCharacter");
 
   // code/main.js
-  var player2 = loadPlayer();
-  loadHero();
+  loadSprites();
+  var player = addCharacter("hero", [95, 305], 2);
+  var enemy = addCharacter("enemy", [540, 85], 2, "Vhaus");
   function createHeartSprite(posX, posY) {
     const heart = add([
       sprite("heart"),
@@ -2399,24 +2401,14 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     ]);
   }
   __name(createHeartSprite, "createHeartSprite");
-  function playerHealthBar(posX, posY, player3) {
+  function playerHealthBar(posX, posY, player2) {
     const healthBar = [];
-    for (let i = 0; i < player3.health; i++) {
+    for (let i = 0; i < player2.health; i++) {
       healthBar[i] = createHeartSprite(posX + i * 30, posY);
     }
   }
   __name(playerHealthBar, "playerHealthBar");
-  playerHealthBar(460, 310, player2);
-  var enemy = add([
-    sprite("enemy", { anim: "idle" }),
-    pos(540, 85),
-    z(1),
-    scale(2),
-    origin("center"),
-    {
-      name: "Vhaus"
-    }
-  ]);
+  playerHealthBar(460, 310, player);
   enemy.flipX(true);
   add([
     sprite("selection_box"),
