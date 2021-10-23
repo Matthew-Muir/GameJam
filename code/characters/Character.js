@@ -1,12 +1,13 @@
 import "../kaboom";
 import { HealthBar } from "./HealthBar.js";
+import { ManaBar } from "./ManaBar.js";
 
 export class Character {
 
   constructor(spriteName, screenPos, spriteScaling, characterName, isPlayerCharacter, flipSpriteX = false) {
 
-    this.healthBarPosition = isPlayerCharacter ? [340,345] : [20,45];
-
+    this.healthBarPosition = isPlayerCharacter ? [340,340] : [15,50];
+    this.manaBarPosition = isPlayerCharacter ? [200,340] : [15,85];
     this.gameObj = add([
       sprite(spriteName, { anim: "idle", flipX: flipSpriteX}),
       pos(screenPos[0], screenPos[1]),
@@ -14,11 +15,9 @@ export class Character {
       z(1),
       scale(spriteScaling),
       {
-        health: 12,
-        mana: 0,
         name: characterName,
-        healthBar: new HealthBar(this.healthBarPosition[0],this.healthBarPosition[1])
-
+        healthBar: new HealthBar(this.healthBarPosition[0],this.healthBarPosition[1]),
+        manaBar: new ManaBar(this.manaBarPosition[0],this.manaBarPosition[1])
       }
     ]);
   }

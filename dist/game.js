@@ -2393,10 +2393,36 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(HealthBar, "HealthBar");
 
+  // code/characters/ManaBar.js
+  var ManaBar = class {
+    constructor(posX, posY) {
+      this.manaBar = this.playerManaBar(posX, posY);
+    }
+    playerManaBar(posX, posY, player2) {
+      const manaBar = [];
+      for (let i = 0; i < 6; i++) {
+        manaBar[i] = this.createManaSprite(posX + i * 22, posY);
+      }
+      return manaBar;
+    }
+    createManaSprite(posX, posY) {
+      const manaCrystal = add([
+        sprite("mana_crystal"),
+        pos(posX, posY),
+        scale(1),
+        origin("center"),
+        z(1),
+        scale(0.7)
+      ]);
+    }
+  };
+  __name(ManaBar, "ManaBar");
+
   // code/characters/Character.js
   var Character = class {
     constructor(spriteName, screenPos, spriteScaling, characterName, isPlayerCharacter, flipSpriteX = false) {
-      this.healthBarPosition = isPlayerCharacter ? [340, 345] : [20, 45];
+      this.healthBarPosition = isPlayerCharacter ? [340, 340] : [15, 50];
+      this.manaBarPosition = isPlayerCharacter ? [200, 340] : [15, 85];
       this.gameObj = add([
         sprite(spriteName, { anim: "idle", flipX: flipSpriteX }),
         pos(screenPos[0], screenPos[1]),
@@ -2404,10 +2430,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         z(1),
         scale(spriteScaling),
         {
-          health: 12,
-          mana: 0,
           name: characterName,
-          healthBar: new HealthBar(this.healthBarPosition[0], this.healthBarPosition[1])
+          healthBar: new HealthBar(this.healthBarPosition[0], this.healthBarPosition[1]),
+          manaBar: new ManaBar(this.manaBarPosition[0], this.manaBarPosition[1])
         }
       ]);
     }
@@ -2418,7 +2443,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprites();
   var player = new Character("hero", [95, 305], 2, null, true);
   var enemy = new Character("enemy", [540, 85], 2, "Vhaus", false, true);
-  enemy.gameObj.flipX(true);
   add([
     sprite("selection_box"),
     pos(320, 415),

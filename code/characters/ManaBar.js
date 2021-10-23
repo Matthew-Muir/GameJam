@@ -1,33 +1,31 @@
-const pmc01 = add([
-  sprite("mana_crystal"),
-  pos(285, 340),
-  scale(1),
-  origin("center"),
-  z(1),
-  scale(.8),
-]);
-const pmc02 = add([
-  sprite("mana_crystal"),
-  pos(310, 340),
-  scale(1),
-  origin("center"),
-  z(1),
-  scale(.8),
-]);
+import "../kaboom";
 
-const emc01 = add([
-  sprite("mana_crystal"),
-  pos(133, 53),
-  scale(1),
-  origin("center"),
-  z(1),
-  scale(.8),
-]);
-const emc02 = add([
-  sprite("mana_crystal"),
-  pos(163, 53),
-  scale(1),
-  origin("center"),
-  z(1),
-  scale(.8),
-]);
+export class ManaBar {
+
+  constructor(posX, posY) {
+    this.manaBar = this.playerManaBar(posX, posY);
+  }
+
+  playerManaBar(posX, posY, player) {
+    const manaBar = [];
+    //Hard coded mana becuase I expect it to be const
+    for (let i = 0; i < 6; i++) {
+      manaBar[i] = this.createManaSprite(posX + (i * 22), posY);
+    }
+    return manaBar;
+  }
+
+  createManaSprite(posX, posY) {
+    const manaCrystal = add([
+      sprite("mana_crystal"),
+      pos(posX, posY),
+      scale(1),
+      origin("center"),
+      z(1),
+      scale(.7),
+    ]);
+  }
+
+}
+
+

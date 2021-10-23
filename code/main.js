@@ -9,7 +9,6 @@ const player = new Character("hero", [95, 305], 2, null, true);
 const enemy = new Character("enemy", [540,85],2,"Vhaus", false, true);
 
 
-enemy.gameObj.flipX(true);
 //add player selection box
 add([
   sprite("selection_box"),
