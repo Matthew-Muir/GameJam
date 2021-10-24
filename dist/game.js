@@ -9,20 +9,20 @@
   var Pt = Object.getOwnPropertySymbols;
   var Qr = Object.prototype.hasOwnProperty;
   var Kr = Object.prototype.propertyIsEnumerable;
-  var dt = /* @__PURE__ */ __name((e, r, t) => r in e ? Ct(e, r, { enumerable: true, configurable: true, writable: true, value: t }) : e[r] = t, "dt");
+  var dt2 = /* @__PURE__ */ __name((e, r, t) => r in e ? Ct(e, r, { enumerable: true, configurable: true, writable: true, value: t }) : e[r] = t, "dt");
   var Ce = /* @__PURE__ */ __name((e, r) => {
     for (var t in r || (r = {}))
-      Qr.call(r, t) && dt(e, t, r[t]);
+      Qr.call(r, t) && dt2(e, t, r[t]);
     if (Pt)
       for (var t of Pt(r))
-        Kr.call(r, t) && dt(e, t, r[t]);
+        Kr.call(r, t) && dt2(e, t, r[t]);
     return e;
   }, "Ce");
   var Re = /* @__PURE__ */ __name((e, r) => jr(e, Or(r)), "Re");
   var s = /* @__PURE__ */ __name((e, r) => Ct(e, "name", { value: r, configurable: true }), "s");
   var se = /* @__PURE__ */ __name((e, r) => () => (e && (r = e(e = 0)), r), "se");
   var en = /* @__PURE__ */ __name((e, r) => () => (r || e((r = { exports: {} }).exports, r), r.exports), "en");
-  var St = /* @__PURE__ */ __name((e, r, t) => (dt(e, typeof r != "symbol" ? r + "" : r, t), t), "St");
+  var St = /* @__PURE__ */ __name((e, r, t) => (dt2(e, typeof r != "symbol" ? r + "" : r, t), t), "St");
   var Dt = /* @__PURE__ */ __name((e, r, t) => new Promise((c, x) => {
     var P = /* @__PURE__ */ __name((S) => {
       try {
@@ -2462,7 +2462,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(Character, "Character");
 
-  // code/characters/BattleUI.js
+  // code/BattleUI/BattleUI.js
   function loadBattleUI(player2) {
     addSpellBoxToGUI();
     addSpellButtonsToGUI(player2);
@@ -2499,8 +2499,16 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       area(),
       z(1),
       scale(1),
-      origin("center")
+      origin("center"),
+      "spellButton",
+      {
+        alreadyCast: false
+      }
     ]);
+    spellButton.clicks(() => debug.log(spell.description));
+    spellButton.clicks(() => spellButton.alreadyCast = true);
+    spellButton.clicks(() => debug.log(spellButton.alreadyCast));
+    spellButton.hovers(() => spellButton.scaleTo(1.02), () => spellButton.scaleTo(1));
   }
   __name(generateSpellButton, "generateSpellButton");
 

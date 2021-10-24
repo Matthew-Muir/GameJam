@@ -2,8 +2,8 @@ import "../kaboom";
 
 export function loadBattleUI(player) {
 
-addSpellBoxToGUI();
-addSpellButtonsToGUI(player);
+  addSpellBoxToGUI();
+  addSpellButtonsToGUI(player);
 
 }
 
@@ -28,6 +28,29 @@ function addSpellButtonsToGUI(player) {
   }
 }
 
+function activeButton() {
+  return {
+    id: "activeButton",
+    require: ["area"],
+
+  }
+}
+
+
+
+function lifespan(time) {
+  let timer = 0;
+  return {
+    id: "lifespan",
+    update() {
+      timer -= dt();
+      if (timer <= 0) {
+        destroy(this);
+      }
+    },
+  };
+}
+
 function generateSpellButton(spell, posX, posY) {
   const spellButton = add([
     text(spell.name, { size: 18 }),
@@ -35,6 +58,22 @@ function generateSpellButton(spell, posX, posY) {
     area(),
     z(1),
     scale(1),
-    origin("center")
+    origin("center"),
+    "spellButton",
+    {
+      alreadyCast: false
+    }
   ]);
+
+  spellButton.clicks(() => debug.log(spell.description));
+
+  spellButton.clicks(() => spellButton.alreadyCast = true);
+
+  spellButton.clicks(() => debug.log(spellButton.alreadyCast));
+
+  //left off working here on getting the spell buttons to become inactive after being cast.
+
+
+
+  spellButton.hovers(() => spellButton.scaleTo(1.02), () => spellButton.scaleTo(1));
 }
