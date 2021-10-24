@@ -24,9 +24,9 @@ export function getGlobalSpellBook(){
 
   globalSpellBook.push(lightning = new Spell ("lightning",2,"shock your opponent",2));
 
-  globalSpellBook.push(blindess = new Spell ("blindess",3,"Your opponents next attack is random",1));
+  globalSpellBook.push(blindness = new Spell ("blindness",3,"Your opponents next attack is random",1));
 
-  globalSpellBook.push(meditate = new Spell ("meditate",0,"gain an extra 2 mana next turn",0));
+  globalSpellBook.push(meditate = new Spell ("Pass-Turn",0,"End your turn",0));
 
   return globalSpellBook;
 }

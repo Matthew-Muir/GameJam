@@ -8,12 +8,9 @@ loadSprites();
 
 const player = new Character("hero", [95, 305], 2, null, true);
 const enemy = new Character("enemy", [540,85],2,"Vhaus", false, true);
-loadBattleUI(player);
+//Right now the spellbutton array is being passed back. Not Ideal but it'll work until I figure out how I want the combat loop to work.
+const mySpells = loadBattleUI(player);
 
-
-
-
-//need to get the attack buttons to hover and be clickable.
 
 
 

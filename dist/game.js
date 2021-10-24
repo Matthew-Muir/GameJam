@@ -9,20 +9,20 @@
   var Pt = Object.getOwnPropertySymbols;
   var Qr = Object.prototype.hasOwnProperty;
   var Kr = Object.prototype.propertyIsEnumerable;
-  var dt2 = /* @__PURE__ */ __name((e, r, t) => r in e ? Ct(e, r, { enumerable: true, configurable: true, writable: true, value: t }) : e[r] = t, "dt");
+  var dt = /* @__PURE__ */ __name((e, r, t) => r in e ? Ct(e, r, { enumerable: true, configurable: true, writable: true, value: t }) : e[r] = t, "dt");
   var Ce = /* @__PURE__ */ __name((e, r) => {
     for (var t in r || (r = {}))
-      Qr.call(r, t) && dt2(e, t, r[t]);
+      Qr.call(r, t) && dt(e, t, r[t]);
     if (Pt)
       for (var t of Pt(r))
-        Kr.call(r, t) && dt2(e, t, r[t]);
+        Kr.call(r, t) && dt(e, t, r[t]);
     return e;
   }, "Ce");
   var Re = /* @__PURE__ */ __name((e, r) => jr(e, Or(r)), "Re");
   var s = /* @__PURE__ */ __name((e, r) => Ct(e, "name", { value: r, configurable: true }), "s");
   var se = /* @__PURE__ */ __name((e, r) => () => (e && (r = e(e = 0)), r), "se");
   var en = /* @__PURE__ */ __name((e, r) => () => (r || e((r = { exports: {} }).exports, r), r.exports), "en");
-  var St = /* @__PURE__ */ __name((e, r, t) => (dt2(e, typeof r != "symbol" ? r + "" : r, t), t), "St");
+  var St = /* @__PURE__ */ __name((e, r, t) => (dt(e, typeof r != "symbol" ? r + "" : r, t), t), "St");
   var Dt = /* @__PURE__ */ __name((e, r, t) => new Promise((c, x) => {
     var P = /* @__PURE__ */ __name((S) => {
       try {
@@ -2434,8 +2434,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     globalSpellBook.push(frost = new Spell("frost", 1, "freeze your opponent", 1));
     globalSpellBook.push(heal = new Spell("heal", 1, "Heal yourself", 1));
     globalSpellBook.push(lightning = new Spell("lightning", 2, "shock your opponent", 2));
-    globalSpellBook.push(blindess = new Spell("blindess", 3, "Your opponents next attack is random", 1));
-    globalSpellBook.push(meditate = new Spell("meditate", 0, "gain an extra 2 mana next turn", 0));
+    globalSpellBook.push(blindness = new Spell("blindness", 3, "Your opponents next attack is random", 1));
+    globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, "End your turn", 0));
     return globalSpellBook;
   }
   __name(getGlobalSpellBook, "getGlobalSpellBook");
@@ -2465,7 +2465,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/BattleUI/BattleUI.js
   function loadBattleUI(player2) {
     addSpellBoxToGUI();
-    addSpellButtonsToGUI(player2);
+    return addSpellButtonsToGUI(player2);
   }
   __name(loadBattleUI, "loadBattleUI");
   function addSpellBoxToGUI() {
@@ -2487,9 +2487,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       [320, 435],
       [533, 435]
     ];
+    const spellButtonArray = [];
     for (let i = 0; i < player2.gameObj.spellBook.length; i++) {
-      generateSpellButton(player2.gameObj.spellBook[i], spellButtonCordinates[i][0], spellButtonCordinates[i][1]);
+      spellButtonArray.push(generateSpellButton(player2.gameObj.spellBook[i], spellButtonCordinates[i][0], spellButtonCordinates[i][1]));
     }
+    return spellButtonArray;
   }
   __name(addSpellButtonsToGUI, "addSpellButtonsToGUI");
   function generateSpellButton(spell, posX, posY) {
@@ -2501,14 +2503,25 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       scale(1),
       origin("center"),
       "spellButton",
+      color(),
       {
-        alreadyCast: false
+        alreadyCast: false,
+        spellObj: spell
       }
     ]);
-    spellButton.clicks(() => debug.log(spell.description));
-    spellButton.clicks(() => spellButton.alreadyCast = true);
-    spellButton.clicks(() => debug.log(spellButton.alreadyCast));
-    spellButton.hovers(() => spellButton.scaleTo(1.02), () => spellButton.scaleTo(1));
+    spellButton.clicks(() => {
+      if (!spellButton.alreadyCast) {
+        debug.log(spell.description);
+        spellButton.alreadyCast = true;
+        spellButton.color = { r: 160, g: 160, b: 160 };
+      }
+    });
+    spellButton.hovers((sb) => {
+      if (!spellButton.alreadyCast) {
+        spellButton.scaleTo(1.02);
+      }
+    }, () => spellButton.scaleTo(1));
+    return spellButton;
   }
   __name(generateSpellButton, "generateSpellButton");
 
@@ -2516,6 +2529,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprites();
   var player = new Character("hero", [95, 305], 2, null, true);
   var enemy = new Character("enemy", [540, 85], 2, "Vhaus", false, true);
-  loadBattleUI(player);
+  var mySpells = loadBattleUI(player);
+  for (let i = 0; i < mySpells.length; i++) {
+    debug.log(mySpells[i].spellObj.cost);
+  }
 })();
 //# sourceMappingURL=game.js.map

@@ -2,8 +2,9 @@ import "../kaboom";
 
 export function loadBattleUI(player) {
 
+//Loads and creates art assets
   addSpellBoxToGUI();
-  addSpellButtonsToGUI(player);
+  return addSpellButtonsToGUI(player);
 
 }
 
@@ -16,42 +17,23 @@ function addSpellBoxToGUI() {
     z(1)
   ]);
 }
-
+//places buttons on GUI. Also creates them by calling the generateSpellButton method.
 function addSpellButtonsToGUI(player) {
   //divide rect into 6 parts 1/6, 3/6, 5/6
   const spellButtonCordinates = [
     [107, 385], [320, 385], [533, 385], [107, 435], [320, 435], [533, 435]
   ];
+  const spellButtonArray = [];
   for (let i = 0; i < player.gameObj.spellBook.length; i++) {
-    generateSpellButton(player.gameObj.spellBook[i], spellButtonCordinates[i][0], spellButtonCordinates[i][1]);
-
+   spellButtonArray.push(generateSpellButton(player.gameObj.spellBook[i], spellButtonCordinates[i][0], spellButtonCordinates[i][1]));
   }
-}
-
-function activeButton() {
-  return {
-    id: "activeButton",
-    require: ["area"],
-
-  }
+  return spellButtonArray;
 }
 
 
-
-function lifespan(time) {
-  let timer = 0;
-  return {
-    id: "lifespan",
-    update() {
-      timer -= dt();
-      if (timer <= 0) {
-        destroy(this);
-      }
-    },
-  };
-}
 
 function generateSpellButton(spell, posX, posY) {
+  //create spell button as game object
   const spellButton = add([
     text(spell.name, { size: 18 }),
     pos(posX, posY),
@@ -60,20 +42,31 @@ function generateSpellButton(spell, posX, posY) {
     scale(1),
     origin("center"),
     "spellButton",
+    color(),
     {
-      alreadyCast: false
+      alreadyCast: false,
+      spellObj: spell
     }
   ]);
 
-  spellButton.clicks(() => debug.log(spell.description));
+  //Logic for if a sb is clickable. And what to do after it's been clicked
+  spellButton.clicks(() => {
+    if (!spellButton.alreadyCast) {
+      debug.log(spell.description);
+      spellButton.alreadyCast = true;
+      spellButton.color = { r: 160, g: 160, b: 160 };
+    }
+  });
 
-  spellButton.clicks(() => spellButton.alreadyCast = true);
+  //Logic for if a sb is hoverable. And what to do if it is.
+  //The logic of hovers(func when hovering, func when done hovering)
+  spellButton.hovers((sb) => {
+    if (!spellButton.alreadyCast) {
+      spellButton.scaleTo(1.02);
+    }
+  }
+    , () => spellButton.scaleTo(1));
 
-  spellButton.clicks(() => debug.log(spellButton.alreadyCast));
-
-  //left off working here on getting the spell buttons to become inactive after being cast.
-
-
-
-  spellButton.hovers(() => spellButton.scaleTo(1.02), () => spellButton.scaleTo(1));
+    return spellButton;
 }
+
