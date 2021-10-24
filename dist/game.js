@@ -2387,8 +2387,34 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         scale(1),
         origin("center"),
         z(1),
-        scale(1.25)
+        scale(1.25),
+        {
+          active: true
+        }
       ]);
+      return heart;
+    }
+    takeDamage(damage) {
+      for (let i = this.healthBar.length; i >= 0; i--) {
+        const currentHeart = this.healthBar[i];
+        if (currentHeart.active) {
+          currentHeart.active = false;
+          currentHeart.color = { r: 190, g: 190, b: 190 };
+          damage--;
+        }
+        if (dmg == 0) {
+          break;
+        }
+      }
+    }
+    isPlayerAlive() {
+      let isAlive = false;
+      this.healthBar.forEach((heart) => {
+        if (heart.active == true) {
+          isAlive = true;
+        }
+      });
+      return isAlive;
     }
   };
   __name(HealthBar, "HealthBar");
@@ -2430,8 +2456,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   __name(Spell, "Spell");
   function getGlobalSpellBook() {
     const globalSpellBook = new Array();
-    globalSpellBook.push(fireball = new Spell("fireball", 1, "cast a fireball at your opponent", 1));
-    globalSpellBook.push(frost = new Spell("frost", 1, "freeze your opponent", 1));
+    globalSpellBook.push(fireball = new Spell("fireball", 6, "cast a fireball at your opponent", 1));
+    globalSpellBook.push(frost = new Spell("frost", 6, "freeze your opponent", 1));
     globalSpellBook.push(heal = new Spell("heal", 1, "Heal yourself", 1));
     globalSpellBook.push(lightning = new Spell("lightning", 2, "shock your opponent", 2));
     globalSpellBook.push(blindness = new Spell("blindness", 3, "Your opponents next attack is random", 1));
@@ -2530,8 +2556,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var player = new Character("hero", [95, 305], 2, null, true);
   var enemy = new Character("enemy", [540, 85], 2, "Vhaus", false, true);
   var mySpells = loadBattleUI(player);
-  for (let i = 0; i < mySpells.length; i++) {
-    debug.log(mySpells[i].spellObj.cost);
-  }
+  debug.log(player.gameObj.healthBar.healthBar[0].active);
 })();
 //# sourceMappingURL=game.js.map

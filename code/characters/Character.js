@@ -9,6 +9,7 @@ export class Character {
 
     this.healthBarPosition = isPlayerCharacter ? [340,340] : [15,50];
     this.manaBarPosition = isPlayerCharacter ? [200,340] : [15,85];
+    
     this.gameObj = add([
       sprite(spriteName, { anim: "idle", flipX: flipSpriteX}),
       pos(screenPos[0], screenPos[1]),

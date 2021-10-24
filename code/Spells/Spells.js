@@ -16,9 +16,9 @@ export function getGlobalSpellBook(){
 
   const globalSpellBook = new Array();
   
-  globalSpellBook.push(fireball = new Spell ("fireball", 1, "cast a fireball at your opponent", 1));
+  globalSpellBook.push(fireball = new Spell ("fireball", 6, "cast a fireball at your opponent", 1));
 
-  globalSpellBook.push(frost = new Spell ("frost",1,"freeze your opponent",1));
+  globalSpellBook.push(frost = new Spell ("frost",6,"freeze your opponent",1));
 
   globalSpellBook.push(heal = new Spell ("heal",1,"Heal yourself",1));
 

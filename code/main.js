@@ -12,5 +12,17 @@ const enemy = new Character("enemy", [540,85],2,"Vhaus", false, true);
 const mySpells = loadBattleUI(player);
 
 
+// while(enemy.gameObj.healthBar.isAlive()){
+//   //players turn
+  
+// }
+
+function attack(player, enemy,spell){
+  enemy.gameObj.healthBar.takeDamage(3);
+}
+
+//attack(player, enemy, mySpells[0]);
+debug.log(player.gameObj.healthBar.healthBar[0].active);
+//Kind of weird but I'll work on cleaning it up!
 
 
