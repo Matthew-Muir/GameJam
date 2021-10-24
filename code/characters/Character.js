@@ -1,6 +1,7 @@
 import "../kaboom";
 import { HealthBar } from "./HealthBar.js";
 import { ManaBar } from "./ManaBar.js";
+import { getGlobalSpellBook } from "../Spells/Spells.js";
 
 export class Character {
 
@@ -14,11 +15,16 @@ export class Character {
       origin("center"),
       z(1),
       scale(spriteScaling),
+
       {
         name: characterName,
         healthBar: new HealthBar(this.healthBarPosition[0],this.healthBarPosition[1]),
-        manaBar: new ManaBar(this.manaBarPosition[0],this.manaBarPosition[1])
-      }
+        manaBar: new ManaBar(this.manaBarPosition[0],this.manaBarPosition[1]),
+        spellBook: getGlobalSpellBook()
+      },
+
+
+
     ]);
   }
 }

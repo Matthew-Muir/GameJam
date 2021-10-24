@@ -2418,6 +2418,28 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(ManaBar, "ManaBar");
 
+  // code/Spells/Spells.js
+  var Spell = class {
+    constructor(name, cost, description, damage) {
+      this.name = name;
+      this.cost = cost;
+      this.description = description;
+      this.damage = damage;
+    }
+  };
+  __name(Spell, "Spell");
+  function getGlobalSpellBook() {
+    const globalSpellBook = new Array();
+    globalSpellBook.push(fireball = new Spell("fireball", 1, "cast a fireball at your opponent", 1));
+    globalSpellBook.push(frost = new Spell("frost", 1, "freeze your opponent", 1));
+    globalSpellBook.push(heal = new Spell("heal", 1, "Heal yourself", 1));
+    globalSpellBook.push(lightning = new Spell("lightning", 2, "shock your opponent", 2));
+    globalSpellBook.push(blindess = new Spell("blindess", 3, "Your opponents next attack is random", 1));
+    globalSpellBook.push(meditate = new Spell("meditate", 0, "gain an extra 2 mana next turn", 0));
+    return globalSpellBook;
+  }
+  __name(getGlobalSpellBook, "getGlobalSpellBook");
+
   // code/characters/Character.js
   var Character = class {
     constructor(spriteName, screenPos, spriteScaling, characterName, isPlayerCharacter, flipSpriteX = false) {
@@ -2432,37 +2454,60 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         {
           name: characterName,
           healthBar: new HealthBar(this.healthBarPosition[0], this.healthBarPosition[1]),
-          manaBar: new ManaBar(this.manaBarPosition[0], this.manaBarPosition[1])
+          manaBar: new ManaBar(this.manaBarPosition[0], this.manaBarPosition[1]),
+          spellBook: getGlobalSpellBook()
         }
       ]);
     }
   };
   __name(Character, "Character");
 
+  // code/characters/BattleUI.js
+  function loadBattleUI(player2) {
+    addSpellBoxToGUI();
+    addSpellButtonsToGUI(player2);
+  }
+  __name(loadBattleUI, "loadBattleUI");
+  function addSpellBoxToGUI() {
+    const spellBoxUI = add([
+      sprite("selection_box"),
+      pos(320, 415),
+      scale(4, 2.5),
+      origin("center"),
+      z(1)
+    ]);
+  }
+  __name(addSpellBoxToGUI, "addSpellBoxToGUI");
+  function addSpellButtonsToGUI(player2) {
+    const spellButtonCordinates = [
+      [107, 385],
+      [320, 385],
+      [533, 385],
+      [107, 435],
+      [320, 435],
+      [533, 435]
+    ];
+    for (let i = 0; i < player2.gameObj.spellBook.length; i++) {
+      generateSpellButton(player2.gameObj.spellBook[i], spellButtonCordinates[i][0], spellButtonCordinates[i][1]);
+    }
+  }
+  __name(addSpellButtonsToGUI, "addSpellButtonsToGUI");
+  function generateSpellButton(spell, posX, posY) {
+    const spellButton = add([
+      text(spell.name, { size: 18 }),
+      pos(posX, posY),
+      area(),
+      z(1),
+      scale(1),
+      origin("center")
+    ]);
+  }
+  __name(generateSpellButton, "generateSpellButton");
+
   // code/main.js
   loadSprites();
   var player = new Character("hero", [95, 305], 2, null, true);
   var enemy = new Character("enemy", [540, 85], 2, "Vhaus", false, true);
-  add([
-    sprite("selection_box"),
-    pos(320, 415),
-    scale(4, 2.5),
-    origin("center"),
-    z(1)
-  ]);
-  add([
-    text(enemy.gameObj.name, { size: 22 }),
-    pos(22, 8)
-  ]);
-  var btn = add([
-    text("Attack", { size: 25 }),
-    pos(80, 380),
-    area(),
-    z(1),
-    scale(1)
-  ]);
-  btn.clicks(() => debug.log(time()));
-  btn.clicks(() => eh06.opacity = 0);
-  btn.hovers(() => btn.scaleTo(1.02), () => btn.scaleTo(1));
+  loadBattleUI(player);
 })();
 //# sourceMappingURL=game.js.map
