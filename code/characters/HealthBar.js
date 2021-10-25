@@ -1,60 +1,52 @@
 import "../kaboom";
-
+import { addSpriteToScreen } from "../UI/SpriteSpawn.js";
+import { Heart } from "./Heart.js";
+/*
+A health bar is an class object that contains the players hearts objects in an array. It also contains any functions to update and make alteration to the health bar.
+*/
 
 export class HealthBar {
 
-  constructor(posX, posY) {
-    this.healthBar = this.playerHealthBar(posX, posY);
+  constructor(player) {
+    this.hearts = this.createHealthBar(player);
+    
   }
 
-  playerHealthBar(posX, posY, player) {
+  createHealthBar(player) {
     const healthBar = [];
-    //Hard coded health becuase all characters will have 12 health
-    for (let i = 0; i < 12; i++) {
-      healthBar[i] = this.createHeartSprite(posX + (i * 25), posY);
+    const spaceBetweenSprites = 25;
+    for (let i = 0; i < player.health; i++) {
+      healthBar[i] = new Heart(player.isPlayer, i * spaceBetweenSprites);
     }
     return healthBar;
   }
 
-  createHeartSprite(posX, posY) {
-    const heart = add([
-      sprite("heart"),
-      pos(posX, posY),
-      scale(1),
-      origin("center"),
-      z(1),
-      scale(1.25),
-      {
-        active: true
-      }
-    ]);
-    return heart;
-  }
-
+//re-write this logic. This health bar is for display purposes only.
+//Health will be tracked in the character obj.
   takeDamage(damage) {
 
-    for(let i = this.healthBar.length; i >= 0; i--){
+    for (let i = this.healthBar.length; i >= 0; i--) {
       const currentHeart = this.healthBar[i];
-      if(currentHeart.active) {
+      if (currentHeart.active) {
         currentHeart.active = false;
-        currentHeart.color = {r:190, g:190, b:190};
+        currentHeart.color = { r: 190, g: 190, b: 190 };
         damage--;
       }
-      if(dmg == 0) {
+      if (dmg == 0) {
         break;
       }
     }
   }
 
-  isPlayerAlive(){
+  isPlayerAlive() {
     let isAlive = false;
 
     this.healthBar.forEach(heart => {
-      if(heart.active == true) {
+      if (heart.active == true) {
         isAlive = true;
       }
-      });
-      return isAlive;
+    });
+    return isAlive;
   }
 
 }

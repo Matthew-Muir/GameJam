@@ -1,11 +1,25 @@
 import "../kaboom";
+import { addSpriteToScreen } from "./SpriteSpawn.js";
 
-export function loadBattleUI(player) {
 
-//Loads and creates art assets
+export class BattleSpellsMenu {
+  spellMenuBox = addSpriteToScreen("selection_box",320,415,null,{x:4,y:2.5},false);
+  constructor(player) {
+    this.player = player;
+  }
+}
+
+export function loadBattleUI(player, enemy) {
+
+
   addSpellBoxToGUI();
   return addSpellButtonsToGUI(player);
 
+}
+
+//function to load character sprites
+function addPlaySprite(character) {
+  character.spirte()
 }
 
 function addSpellBoxToGUI() {
@@ -55,6 +69,7 @@ function generateSpellButton(spell, posX, posY) {
       debug.log(spell.description);
       spellButton.alreadyCast = true;
       spellButton.color = { r: 160, g: 160, b: 160 };
+      spellButton.scaleTo(1);
     }
   });
 

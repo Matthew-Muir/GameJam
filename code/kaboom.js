@@ -5,5 +5,5 @@ kaboom({
     height: 480,
     letterbox:true,
     font: "sinko",
-    background: [ 212, 207, 210, ],
+    background: [ 200, 200, 200, ],
 })

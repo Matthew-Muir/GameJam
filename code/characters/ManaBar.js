@@ -1,30 +1,23 @@
 import "../kaboom";
+import { Mana } from "./Mana.js";
 
 export class ManaBar {
 
-  constructor(posX, posY) {
-    this.manaBar = this.playerManaBar(posX, posY);
+  constructor(player) {
+    this.manaBar = this.createManaBar(player);
   }
 
-  playerManaBar(posX, posY, player) {
+    createManaBar(player) {
+
     const manaBar = [];
-    //Hard coded mana becuase I expect it to be const
-    for (let i = 0; i < 6; i++) {
-      manaBar[i] = this.createManaSprite(posX + (i * 22), posY);
+    const spaceBetweenSprites = 20;
+    for (let i = 0; i < player.mana; i++) {
+      manaBar[i] = new Mana(player.isPlayer,i * spaceBetweenSprites);
     }
     return manaBar;
   }
 
-  createManaSprite(posX, posY) {
-    const manaCrystal = add([
-      sprite("mana_crystal"),
-      pos(posX, posY),
-      scale(1),
-      origin("center"),
-      z(1),
-      scale(.7),
-    ]);
-  }
+  
 
 }
 
