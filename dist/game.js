@@ -2386,7 +2386,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(addSpriteToScreen, "addSpriteToScreen");
 
-  // code/characters/Heart.js
+  // code/health/Heart.js
   var Heart = class {
     constructor(isPlayer, spriteSpacing) {
       __publicField(this, "active", true);
@@ -2398,7 +2398,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(Heart, "Heart");
 
-  // code/characters/HealthBar.js
+  // code/health/HealthBar.js
   var HealthBar = class {
     constructor(player2) {
       this.hearts = this.createHealthBar(player2);
@@ -2436,7 +2436,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(HealthBar, "HealthBar");
 
-  // code/characters/Mana.js
+  // code/mana/Mana.js
   var Mana = class {
     constructor(isPlayers, spriteSpacing) {
       __publicField(this, "active", true);
@@ -2448,7 +2448,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(Mana, "Mana");
 
-  // code/characters/ManaBar.js
+  // code/mana/ManaBar.js
   var ManaBar = class {
     constructor(player2) {
       this.manaBar = this.createManaBar(player2);
@@ -2464,7 +2464,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(ManaBar, "ManaBar");
 
-  // code/Spells/Spells.js
+  // code/spells/Spells.js
   var Spell = class {
     constructor(name, cost, description, damage) {
       this.name = name;
@@ -2486,34 +2486,88 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(getGlobalSpellBook, "getGlobalSpellBook");
 
-  // code/characters/Character.js
+  // code/spells/SpellButton.js
+  var SpellButton = class {
+    constructor(spell, posX, posY, player2) {
+      __publicField(this, "castThisTurn", false);
+      this.spell = spell;
+      this.player = player2;
+      this.gameObj = add([
+        text(this.spell.name, { size: 18 }),
+        pos(posX, posY),
+        area(),
+        z(1),
+        scale(1),
+        origin("center"),
+        "spellButton",
+        color()
+      ]);
+      this.addMouseInteractions();
+    }
+    spellCast(player2) {
+    }
+    addMouseInteractions() {
+      this.gameObj.hovers(() => {
+        if (!this.castThisTurn) {
+          this.gameObj.scaleTo(1.02);
+        }
+      }, () => this.gameObj.scaleTo(1));
+      this.gameObj.clicks(() => {
+        if (!this.castThisTurn) {
+          debug.log(this.spell.description);
+          this.castThisTurn = true;
+          this.gameObj.color = { r: 160, g: 160, b: 160 };
+          this.gameObj.scaleTo(1);
+        }
+      });
+    }
+  };
+  __name(SpellButton, "SpellButton");
+
+  // code/spells/SpellBar.js
+  var SpellBar = class {
+    constructor(player2) {
+      __publicField(this, "spellBarBackground", addSpriteToScreen("selection_box", 320, 415, null, { x: 4, y: 2.5 }, false));
+      this.spells = this.createSpellButtons(player2);
+    }
+    createSpellButtons(player2) {
+      const spellButtonCordinates = [
+        [107, 385],
+        [320, 385],
+        [533, 385],
+        [107, 435],
+        [320, 435],
+        [533, 435]
+      ];
+      const spellButtonArray = [];
+      for (let i = 0; i < player2.spellBook.length; i++) {
+        spellButtonArray.push(new SpellButton(player2.spellBook[i], spellButtonCordinates[i][0], spellButtonCordinates[i][1], player2));
+      }
+      return spellButtonArray;
+    }
+  };
+  __name(SpellBar, "SpellBar");
+
+  // code/character/Character.js
   var Character = class {
-    constructor(spriteName, screenPos, spriteScaling, isPlayer, flipSpriteX) {
+    constructor(spriteName, screenPos, spriteScaling, isPlayer, flipSpriteX, opponent) {
       __publicField(this, "health", 12);
       __publicField(this, "mana", 6);
       __publicField(this, "spellBook", getGlobalSpellBook());
+      this.opponent = opponent;
       this.isPlayer = isPlayer;
       this.healthBar = new HealthBar(this);
       this.manaBar = new ManaBar(this);
+      this.spellBar = isPlayer ? new SpellBar(this) : null;
       this.spritePosition = isPlayer ? [200, 340] : [15, 85];
       this.gameObj = addSpriteToScreen(spriteName, screenPos[0], screenPos[1], "idle", spriteScaling, flipSpriteX);
     }
   };
   __name(Character, "Character");
 
-  // code/UI/BattleUI.js
-  var BattleSpellsMenu = class {
-    constructor(player2) {
-      __publicField(this, "spellMenuBox", addSpriteToScreen("selection_box", 320, 415, null, { x: 4, y: 2.5 }, false));
-      this.player = player2;
-    }
-  };
-  __name(BattleSpellsMenu, "BattleSpellsMenu");
-
   // code/main.js
   loadSprites();
-  var player = new Character("hero", [95, 305], 2, true, false);
   var enemy = new Character("enemy", [540, 85], 2, false, true);
-  var spellsMenu = new BattleSpellsMenu(player);
+  var player = new Character("hero", [95, 305], 2, true, false, enemy);
 })();
 //# sourceMappingURL=game.js.map

@@ -1,14 +1,12 @@
 {
   "hero": {
-		"x": 160,
-		"y": 175,
-		"width": 65,
-		"height": 52,
-		"sliceX": 1,
-		"anims": {
-			"idle": 
-				0
-			
-		}
+    "x": 160,
+    "y": 175,
+    "width": 65,
+    "height": 52,
+    "sliceX": 1,
+    "anims": {
+      "idle": 0
+    }
   }
 }

@@ -1,10 +1,10 @@
 {
   "selection_box": {
-		"x": 5,
-		"y": 53,
-		"width": 155,
-		"height": 46,
-		"sliceX": 1,
-		"sliceY": 1
-	}
+    "x": 5,
+    "y": 53,
+    "width": 155,
+    "height": 46,
+    "sliceX": 1,
+    "sliceY": 1
+  }
 }

@@ -9,7 +9,7 @@ export class HealthBar {
 
   constructor(player) {
     this.hearts = this.createHealthBar(player);
-    
+
   }
 
   createHealthBar(player) {
@@ -21,8 +21,8 @@ export class HealthBar {
     return healthBar;
   }
 
-//re-write this logic. This health bar is for display purposes only.
-//Health will be tracked in the character obj.
+  //re-write this logic. This health bar is for display purposes only.
+  //Health will be tracked in the character obj.
   takeDamage(damage) {
 
     for (let i = this.healthBar.length; i >= 0; i--) {
