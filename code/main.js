@@ -6,7 +6,7 @@ loadSprites();
 
 const enemy = new Character("enemy", [540, 85], 2, false, true);
 const player = new Character("hero", [95, 305], 2, true, false, enemy);
-
+enemy.opponent = player;
 
 
 

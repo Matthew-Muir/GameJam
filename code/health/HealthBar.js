@@ -9,7 +9,6 @@ export class HealthBar {
 
   constructor(player) {
     this.hearts = this.createHealthBar(player);
-
   }
 
   createHealthBar(player) {
@@ -21,18 +20,17 @@ export class HealthBar {
     return healthBar;
   }
 
-  //re-write this logic. This health bar is for display purposes only.
-  //Health will be tracked in the character obj.
   takeDamage(damage) {
 
-    for (let i = this.healthBar.length; i >= 0; i--) {
-      const currentHeart = this.healthBar[i];
+
+    for (let i = this.hearts.length -1; i >= 0; i--) {
+      const currentHeart = this.hearts[i];
       if (currentHeart.active) {
         currentHeart.active = false;
-        currentHeart.color = { r: 190, g: 190, b: 190 };
+        currentHeart.gameObj.color = { r: 190, g: 190, b: 190 };
         damage--;
       }
-      if (dmg == 0) {
+      if (damage == 0) {
         break;
       }
     }

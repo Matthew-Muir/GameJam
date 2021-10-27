@@ -23,9 +23,7 @@ export class SpellButton {
 
   }//end of ctor
 
-  spellCast(player) {
-    //left off here. Add logic so that spells damage opponent.
-  }
+
 
   addMouseInteractions() {
     //UI feedback over buttons
@@ -42,6 +40,7 @@ export class SpellButton {
         this.castThisTurn = true;
         this.gameObj.color = { r: 160, g: 160, b: 160 };
         this.gameObj.scaleTo(1);
+        this.spell.spellCast(this.player);
       }
     });
   }

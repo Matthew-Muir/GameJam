@@ -2412,14 +2412,16 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       return healthBar;
     }
     takeDamage(damage) {
-      for (let i = this.healthBar.length; i >= 0; i--) {
-        const currentHeart = this.healthBar[i];
+      for (let i = this.hearts.length - 1; i >= 0; i--) {
+        wait(1, () => {
+        });
+        const currentHeart = this.hearts[i];
         if (currentHeart.active) {
           currentHeart.active = false;
-          currentHeart.color = { r: 190, g: 190, b: 190 };
+          currentHeart.gameObj.color = { r: 190, g: 190, b: 190 };
           damage--;
         }
-        if (dmg == 0) {
+        if (damage == 0) {
           break;
         }
       }
@@ -2472,15 +2474,18 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       this.description = description;
       this.damage = damage;
     }
+    spellCast(player2) {
+      player2.opponent.healthBar.takeDamage(this.damage);
+    }
   };
   __name(Spell, "Spell");
   function getGlobalSpellBook() {
     const globalSpellBook = new Array();
     globalSpellBook.push(fireball = new Spell("fireball", 6, "cast a fireball at your opponent", 1));
-    globalSpellBook.push(frost = new Spell("frost", 6, "freeze your opponent", 1));
-    globalSpellBook.push(heal = new Spell("heal", 1, "Heal yourself", 1));
-    globalSpellBook.push(lightning = new Spell("lightning", 2, "shock your opponent", 2));
-    globalSpellBook.push(blindness = new Spell("blindness", 3, "Your opponents next attack is random", 1));
+    globalSpellBook.push(frost = new Spell("frost", 6, "freeze your opponent", 2));
+    globalSpellBook.push(heal = new Spell("heal", 1, "Heal yourself", 3));
+    globalSpellBook.push(lightning = new Spell("lightning", 2, "shock your opponent", 4));
+    globalSpellBook.push(blindness = new Spell("blindness", 3, "Your opponents next attack is random", 5));
     globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, "End your turn", 0));
     return globalSpellBook;
   }
@@ -2504,8 +2509,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       ]);
       this.addMouseInteractions();
     }
-    spellCast(player2) {
-    }
     addMouseInteractions() {
       this.gameObj.hovers(() => {
         if (!this.castThisTurn) {
@@ -2518,6 +2521,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
           this.castThisTurn = true;
           this.gameObj.color = { r: 160, g: 160, b: 160 };
           this.gameObj.scaleTo(1);
+          this.spell.spellCast(this.player);
         }
       });
     }
@@ -2569,5 +2573,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprites();
   var enemy = new Character("enemy", [540, 85], 2, false, true);
   var player = new Character("hero", [95, 305], 2, true, false, enemy);
+  enemy.opponent = player;
 })();
 //# sourceMappingURL=game.js.map
