@@ -2401,6 +2401,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/health/HealthBar.js
   var HealthBar = class {
     constructor(player2) {
+      __publicField(this, "healthAvailable", 12);
       this.hearts = this.createHealthBar(player2);
     }
     createHealthBar(player2) {
@@ -2413,12 +2414,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     takeDamage(damage) {
       for (let i = this.hearts.length - 1; i >= 0; i--) {
-        wait(1, () => {
-        });
         const currentHeart = this.hearts[i];
         if (currentHeart.active) {
           currentHeart.active = false;
           currentHeart.gameObj.color = { r: 190, g: 190, b: 190 };
+          this.healthAvailable--;
           damage--;
         }
         if (damage == 0) {
@@ -2453,6 +2453,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/mana/ManaBar.js
   var ManaBar = class {
     constructor(player2) {
+      __publicField(this, "manaAvailable", 6);
       this.manaBar = this.createManaBar(player2);
     }
     createManaBar(player2) {
@@ -2462,6 +2463,39 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         manaBar[i] = new Mana(player2.isPlayer, i * spaceBetweenSprites);
       }
       return manaBar;
+    }
+    useMana(manaCost) {
+      if (manaCost <= this.manaAvailable) {
+        for (let i = this.manaBar.length - 1; i >= 0; i--) {
+          const currentManaCrystal = this.manaBar[i];
+          if (currentManaCrystal.active) {
+            currentManaCrystal.active = false;
+            currentManaCrystal.gameObj.color = { r: 190, g: 190, b: 190 };
+            this.manaAvailable--;
+            manaCost--;
+            if (manaCost == 0) {
+              break;
+            }
+          }
+        }
+        return true;
+      }
+      return false;
+    }
+    startOfTurnMana(turnNum) {
+      turnNum = turnNum <= 3 ? turnNum : 3;
+      if (this.manaAvailable < 6) {
+        for (let i = 0; i < this.manaBar.length; i++) {
+          if (this.manaBar[i].active == false) {
+            this.manaBar[i].active = true;
+            this.manaBar[i].color = null;
+            turnNum--;
+            if (turnNum == 0) {
+              break;
+            }
+          }
+        }
+      }
     }
   };
   __name(ManaBar, "ManaBar");
@@ -2481,11 +2515,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   __name(Spell, "Spell");
   function getGlobalSpellBook() {
     const globalSpellBook = new Array();
-    globalSpellBook.push(fireball = new Spell("fireball", 6, "cast a fireball at your opponent", 1));
-    globalSpellBook.push(frost = new Spell("frost", 6, "freeze your opponent", 2));
-    globalSpellBook.push(heal = new Spell("heal", 1, "Heal yourself", 3));
-    globalSpellBook.push(lightning = new Spell("lightning", 2, "shock your opponent", 4));
-    globalSpellBook.push(blindness = new Spell("blindness", 3, "Your opponents next attack is random", 5));
+    globalSpellBook.push(fireball = new Spell("fireball", 1, "cast a fireball at your opponent", 1));
+    globalSpellBook.push(frost = new Spell("frost", 2, "freeze your opponent", 2));
+    globalSpellBook.push(heal = new Spell("heal", 3, "Heal yourself", 3));
+    globalSpellBook.push(lightning = new Spell("lightning", 4, "shock your opponent", 4));
+    globalSpellBook.push(blindness = new Spell("blindness", 5, "Your opponents next attack is random", 5));
     globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, "End your turn", 0));
     return globalSpellBook;
   }
@@ -2516,7 +2550,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         }
       }, () => this.gameObj.scaleTo(1));
       this.gameObj.clicks(() => {
-        if (!this.castThisTurn) {
+        if (!this.castThisTurn && this.player.manaBar.useMana(this.spell.cost)) {
           debug.log(this.spell.description);
           this.castThisTurn = true;
           this.gameObj.color = { r: 160, g: 160, b: 160 };
@@ -2574,5 +2608,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var enemy = new Character("enemy", [540, 85], 2, false, true);
   var player = new Character("hero", [95, 305], 2, true, false, enemy);
   enemy.opponent = player;
+  if (player.manaBar.manaAvailable <= 0) {
+    debug.log("end of turn");
+  }
 })();
 //# sourceMappingURL=game.js.map

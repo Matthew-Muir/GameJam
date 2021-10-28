@@ -6,7 +6,7 @@ A health bar is an class object that contains the players hearts objects in an a
 */
 
 export class HealthBar {
-
+  healthAvailable = 12;
   constructor(player) {
     this.hearts = this.createHealthBar(player);
   }
@@ -21,13 +21,12 @@ export class HealthBar {
   }
 
   takeDamage(damage) {
-
-
     for (let i = this.hearts.length -1; i >= 0; i--) {
       const currentHeart = this.hearts[i];
       if (currentHeart.active) {
         currentHeart.active = false;
         currentHeart.gameObj.color = { r: 190, g: 190, b: 190 };
+        this.healthAvailable--;
         damage--;
       }
       if (damage == 0) {
