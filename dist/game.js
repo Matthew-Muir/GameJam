@@ -2412,17 +2412,33 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
       return healthBar;
     }
-    takeDamage(damage) {
-      for (let i = this.hearts.length - 1; i >= 0; i--) {
-        const currentHeart = this.hearts[i];
-        if (currentHeart.active) {
-          currentHeart.active = false;
-          currentHeart.gameObj.color = { r: 190, g: 190, b: 190 };
-          this.healthAvailable--;
-          damage--;
+    updateHealthBar(damage) {
+      if (damage < 0) {
+        damage = Math.abs(damage);
+        for (let i = 0; i < this.hearts.length; i++) {
+          const currentHeart = this.hearts[i];
+          if (!currentHeart.active) {
+            currentHeart.active = true;
+            currentHeart.gameObj.color = null;
+            damage--;
+            this.healthAvailable++;
+            if (damage == 0) {
+              break;
+            }
+          }
         }
-        if (damage == 0) {
-          break;
+      } else {
+        for (let i = this.hearts.length - 1; i >= 0; i--) {
+          const currentHeart = this.hearts[i];
+          if (currentHeart.active) {
+            currentHeart.active = false;
+            currentHeart.gameObj.color = { r: 190, g: 190, b: 190 };
+            damage--;
+            this.healthAvailable--;
+            if (damage == 0) {
+              break;
+            }
+          }
         }
       }
     }
@@ -2482,19 +2498,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
       return false;
     }
-    startOfTurnMana(turnNum) {
-      turnNum = turnNum <= 3 ? turnNum : 3;
-      if (this.manaAvailable < 6) {
-        for (let i = 0; i < this.manaBar.length; i++) {
-          if (this.manaBar[i].active == false) {
-            this.manaBar[i].active = true;
-            this.manaBar[i].color = null;
-            turnNum--;
-            if (turnNum == 0) {
-              break;
-            }
-          }
-        }
+    addMana(amountToAdd) {
+      if (amountToAdd + this.manaAvailable > 6) {
+        this.manaAvailable = 6;
+      } else {
+        this.manaAvailable += amountToAdd;
       }
     }
   };
@@ -2502,25 +2510,40 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/spells/Spells.js
   var Spell = class {
-    constructor(name, cost, description, damage) {
+    constructor(name, cost, damage, spellType2, description) {
       this.name = name;
       this.cost = cost;
       this.description = description;
       this.damage = damage;
+      this.spellType = spellType2;
     }
     spellCast(player2) {
-      player2.opponent.healthBar.takeDamage(this.damage);
+      switch (this.spellType) {
+        case spellType.DAMAGE:
+          player2.opponent.healthBar.updateHealthBar(this.damage);
+          break;
+        case spellType.HEAL:
+          player2.healthBar.updateHealthBar(this.damage);
+          break;
+        case spellType.PASS:
+          break;
+      }
     }
   };
   __name(Spell, "Spell");
+  var spellType = {
+    DAMAGE: "damage",
+    HEAL: "heal",
+    PASS: "pass"
+  };
   function getGlobalSpellBook() {
     const globalSpellBook = new Array();
-    globalSpellBook.push(fireball = new Spell("fireball", 1, "cast a fireball at your opponent", 1));
-    globalSpellBook.push(frost = new Spell("frost", 2, "freeze your opponent", 2));
-    globalSpellBook.push(heal = new Spell("heal", 3, "Heal yourself", 3));
-    globalSpellBook.push(lightning = new Spell("lightning", 4, "shock your opponent", 4));
-    globalSpellBook.push(blindness = new Spell("blindness", 5, "Your opponents next attack is random", 5));
-    globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, "End your turn", 0));
+    globalSpellBook.push(fireball = new Spell("fireball", 1, 1, spellType.DAMAGE, "cast a fireball at your opponent"));
+    globalSpellBook.push(frost = new Spell("frost", 2, 2, spellType.DAMAGE, "freeze your opponent"));
+    globalSpellBook.push(heal = new Spell("heal", 3, -3, spellType.HEAL, "Heal yourself"));
+    globalSpellBook.push(lightning = new Spell("lightning", 4, 4, spellType.DAMAGE, "shock your opponent"));
+    globalSpellBook.push(blindness = new Spell("blindness", 5, 5, spellType.DAMAGE, "Your opponents next attack is random"));
+    globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, 0, spellType.PASS, "End your turn"));
     return globalSpellBook;
   }
   __name(getGlobalSpellBook, "getGlobalSpellBook");
@@ -2603,13 +2626,30 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(Character, "Character");
 
+  // code/UI/DisplayPlayerActionText.js
+  function spellCastDesc(player2, num) {
+    player2.spellBar.spells.forEach((sb) => {
+      sb.gameObj.area = num;
+      sb.gameObj.z = num;
+    });
+    const textTest = add([
+      pos(300, 400),
+      text("You cast a fireball ball at your opponent...", {
+        size: 20,
+        width: 320
+      }),
+      origin("center")
+    ]);
+  }
+  __name(spellCastDesc, "spellCastDesc");
+
   // code/main.js
   loadSprites();
   var enemy = new Character("enemy", [540, 85], 2, false, true);
   var player = new Character("hero", [95, 305], 2, true, false, enemy);
   enemy.opponent = player;
-  if (player.manaBar.manaAvailable <= 0) {
-    debug.log("end of turn");
-  }
+  keyPress("space", () => {
+    spellCastDesc(player, 0);
+  });
 })();
 //# sourceMappingURL=game.js.map
