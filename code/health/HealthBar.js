@@ -26,22 +26,22 @@ export class HealthBar {
     return healthBar;
   }
 
-//heals and damages player.
+  //heals and damages player.
   updateHealthBar(damage) {
     //health player
-    if(damage < 0) {
+    if (damage < 0) {
       damage = Math.abs(damage);
 
-      for(let i = 0; i < this.hearts.length; i++){
+      for (let i = 0; i < this.hearts.length; i++) {
         const currentHeart = this.hearts[i];
 
-        if(!currentHeart.active){
+        if (!currentHeart.active) {
           currentHeart.active = true;
           currentHeart.gameObj.color = null;
           damage--;
           this.healthAvailable++;
 
-          if(damage == 0){
+          if (damage == 0) {
             break;
           }
         }
@@ -49,22 +49,22 @@ export class HealthBar {
     }
     //damage player
     else {
-      for(let i = this.hearts.length - 1; i >= 0; i--) {
+      for (let i = this.hearts.length - 1; i >= 0; i--) {
         const currentHeart = this.hearts[i];
 
-        if(currentHeart.active){
+        if (currentHeart.active) {
           currentHeart.active = false;
           currentHeart.gameObj.color = { r: 190, g: 190, b: 190 };
           damage--;
           this.healthAvailable--;
 
-          if(damage == 0) {
+          if (damage == 0) {
             break;
           }
         }
       }
     }
-    
+
   }
 
 

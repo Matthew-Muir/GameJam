@@ -1,4 +1,4 @@
-import "../kaboom";
+ import "../kaboom";
 import { Mana } from "./Mana.js";
 
 export class ManaBar {

@@ -2509,7 +2509,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   __name(ManaBar, "ManaBar");
 
   // code/UI/DisplayPlayerActionText.js
-  function spellCastDesc2(player2, spell) {
+  function spellCastDesc(player2, spell) {
     const test = player2.spellBar.spells[0].gameObj.area;
     player2.spellBar.spells.forEach((sb) => {
       sb.gameObj.area = 0;
@@ -2532,7 +2532,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       destroy(battleText);
     });
   }
-  __name(spellCastDesc2, "spellCastDesc");
+  __name(spellCastDesc, "spellCastDesc");
 
   // code/spells/Spells.js
   var Spell = class {
@@ -2547,11 +2547,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       switch (this.spellType) {
         case spellType.DAMAGE:
           player2.opponent.healthBar.updateHealthBar(this.damage);
-          spellCastDesc2(player2, this);
+          spellCastDesc(player2, this);
           break;
         case spellType.HEAL:
           player2.healthBar.updateHealthBar(this.damage);
-          spellCastDesc2(player2, this);
+          spellCastDesc(player2, this);
           break;
         case spellType.PASS:
           break;
@@ -2658,8 +2658,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var enemy = new Character("enemy", [540, 85], 2, false, true);
   var player = new Character("hero", [95, 305], 2, true, false, enemy);
   enemy.opponent = player;
-  keyPress("space", () => {
-    spellCastDesc(player, 0);
-  });
+  var testTest = add([
+    text("1 Fireball 1", { size: 20 }),
+    origin("center"),
+    pos(width() / 2, height() / 2)
+  ]);
 })();
 //# sourceMappingURL=game.js.map
