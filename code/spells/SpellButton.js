@@ -36,7 +36,6 @@ export class SpellButton {
     //UI prevent user from clicking a spell twice
     this.gameObj.clicks(() => {
       if (!this.castThisTurn && this.player.manaBar.useMana(this.spell.cost)) {
-        debug.log(this.spell.description);
         this.castThisTurn = true;
         this.gameObj.color = { r: 160, g: 160, b: 160 };
         this.gameObj.scaleTo(1);

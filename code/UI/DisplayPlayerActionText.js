@@ -1,16 +1,25 @@
 import "../kaboom";
 
-export function spellCastDesc(player, num) {
+export function spellCastDesc(player, spell) {
 
-  
-  player.spellBar.spells.forEach(sb => {sb.gameObj.area = num; sb.gameObj.z = num;});
+  //hide buttons
+  const test = player.spellBar.spells[0].gameObj.area;
+  player.spellBar.spells.forEach(sb => { sb.gameObj.area = 0; sb.gameObj.z = 0; });
 
-  const textTest = add([
-    pos(300 , 400),
-    text("You cast a fireball ball at your opponent...", {
-        size: 20,
-        width: 320,
+  //output spell description
+  const battleText = add([
+    pos(28, 390),
+    text(spell.description, {
+      size: 20,
+      width: 600,
     }),
-    origin("center")
-]);
+    origin("left"),
+    z(1),
+  ]);
+
+  //Spell description displays for 2.5 secs before spellbuttons reappear.
+  wait(2.5, () => {
+    player.spellBar.spells.forEach(sb => { sb.gameObj.area = test; sb.gameObj.z = 1; });
+    destroy(battleText);
+  });
 }

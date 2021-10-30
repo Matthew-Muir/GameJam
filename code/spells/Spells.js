@@ -1,4 +1,5 @@
 import "../kaboom";
+import {spellCastDesc} from "../UI/DisplayPlayerActionText.js";
 
 class Spell {
 
@@ -15,10 +16,12 @@ class Spell {
     switch (this.spellType) {
       case spellType.DAMAGE:
         player.opponent.healthBar.updateHealthBar(this.damage);
+        spellCastDesc(player, this);
         break;
 
       case spellType.HEAL:
         player.healthBar.updateHealthBar(this.damage);
+        spellCastDesc(player, this);
         break;
 
       case spellType.PASS:

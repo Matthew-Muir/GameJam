@@ -2508,6 +2508,32 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(ManaBar, "ManaBar");
 
+  // code/UI/DisplayPlayerActionText.js
+  function spellCastDesc2(player2, spell) {
+    const test = player2.spellBar.spells[0].gameObj.area;
+    player2.spellBar.spells.forEach((sb) => {
+      sb.gameObj.area = 0;
+      sb.gameObj.z = 0;
+    });
+    const battleText = add([
+      pos(28, 390),
+      text(spell.description, {
+        size: 20,
+        width: 600
+      }),
+      origin("left"),
+      z(1)
+    ]);
+    wait(2.5, () => {
+      player2.spellBar.spells.forEach((sb) => {
+        sb.gameObj.area = test;
+        sb.gameObj.z = 1;
+      });
+      destroy(battleText);
+    });
+  }
+  __name(spellCastDesc2, "spellCastDesc");
+
   // code/spells/Spells.js
   var Spell = class {
     constructor(name, cost, damage, spellType2, description) {
@@ -2521,9 +2547,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       switch (this.spellType) {
         case spellType.DAMAGE:
           player2.opponent.healthBar.updateHealthBar(this.damage);
+          spellCastDesc2(player2, this);
           break;
         case spellType.HEAL:
           player2.healthBar.updateHealthBar(this.damage);
+          spellCastDesc2(player2, this);
           break;
         case spellType.PASS:
           break;
@@ -2574,7 +2602,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }, () => this.gameObj.scaleTo(1));
       this.gameObj.clicks(() => {
         if (!this.castThisTurn && this.player.manaBar.useMana(this.spell.cost)) {
-          debug.log(this.spell.description);
           this.castThisTurn = true;
           this.gameObj.color = { r: 160, g: 160, b: 160 };
           this.gameObj.scaleTo(1);
@@ -2625,23 +2652,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
   };
   __name(Character, "Character");
-
-  // code/UI/DisplayPlayerActionText.js
-  function spellCastDesc(player2, num) {
-    player2.spellBar.spells.forEach((sb) => {
-      sb.gameObj.area = num;
-      sb.gameObj.z = num;
-    });
-    const textTest = add([
-      pos(300, 400),
-      text("You cast a fireball ball at your opponent...", {
-        size: 20,
-        width: 320
-      }),
-      origin("center")
-    ]);
-  }
-  __name(spellCastDesc, "spellCastDesc");
 
   // code/main.js
   loadSprites();
