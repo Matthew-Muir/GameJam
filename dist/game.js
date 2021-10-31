@@ -2620,7 +2620,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var Battlefield = class {
     constructor() {
       __publicField(this, "playerMenuBar", add(gameObjConfigs.spellBar.gameObjComps));
-      __publicField(this, "enemyStatBar", add(gameObjConfigs.enemyStatBar.gameObjComps));
     }
   };
   __name(Battlefield, "Battlefield");

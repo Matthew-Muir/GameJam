@@ -46,7 +46,7 @@ export const gameObjConfigs = {
 
   enemyHeart: {
     gameObjComps: [
-      sprite("heart"),
+      sprite("heart",),
       pos(), //define in ResourceBar
       origin("center"),
       z(1),
@@ -94,8 +94,10 @@ export const gameObjConfigs = {
       pos(200, 35),
       origin("center"),
       z(0),
-      scale({ x: 5, y: 4 })
+      scale({ x: 5, y: 4 }),
     ],
-  }
+  },
+
+
 
 };

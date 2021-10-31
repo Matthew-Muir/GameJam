@@ -12,7 +12,7 @@ const battlefield = new Battlefield();
 //enemy.opponent = player;
 
 
-//player.healthBar.resourceBar.forEach(element => debug.log(`${element.gameObj.pos.x} ${element.gameObj.pos.y}`));
+
 
 
 /*
@@ -35,14 +35,12 @@ TO DO
 ~ Heal spells shouldn't cast if player if already full health.
 ~ Make AI for opponent to take their turn.
 ~ Replace weird hide spell button logic with simple hide attribute
-~ REFACTOR CODE!!!
+add enemy name
+~ 
 
 
 
 IDEAS
-combine heart and mana into single Resource obj.
-Combine Health and Mana bars into single Resource bars
-Combine an objects GameObj data into an obj that's easier to pass. Use Add() to create the empty obj. Then loop through each item in obj adding to instantiated game obj.
 
-A sprite obj that contains all the sprite Data settings for builind their obj.
+
 */
