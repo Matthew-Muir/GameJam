@@ -2430,17 +2430,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     HEAL: "heal",
     PASS: "pass"
   };
-  function getGlobalSpellBook() {
-    const globalSpellBook = new Array();
-    globalSpellBook.push(fireball = new Spell("fireball", 1, 1, spellType.DAMAGE, "cast a fireball at your opponent"));
-    globalSpellBook.push(frost = new Spell("frost", 2, 2, spellType.DAMAGE, "freeze your opponent"));
-    globalSpellBook.push(heal = new Spell("heal", 3, -3, spellType.HEAL, "Heal yourself"));
-    globalSpellBook.push(lightning = new Spell("lightning", 4, 4, spellType.DAMAGE, "shock your opponent"));
-    globalSpellBook.push(blindness = new Spell("blindness", 5, 5, spellType.DAMAGE, "Your opponents next attack is random"));
-    globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, 0, spellType.PASS, "End your turn"));
-    return globalSpellBook;
-  }
-  __name(getGlobalSpellBook, "getGlobalSpellBook");
+  var globalSpellBook = new Array();
+  globalSpellBook.push(fireball = new Spell("fireball", 1, 1, spellType.DAMAGE, "cast a fireball at your opponent"));
+  globalSpellBook.push(frost = new Spell("frost", 2, 2, spellType.DAMAGE, "freeze your opponent"));
+  globalSpellBook.push(heal = new Spell("heal", 3, -3, spellType.HEAL, "Heal yourself"));
+  globalSpellBook.push(lightning = new Spell("lightning", 4, 4, spellType.DAMAGE, "shock your opponent"));
+  globalSpellBook.push(blindness = new Spell("blindness", 5, 5, spellType.DAMAGE, "Your opponents next attack is random"));
+  globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, 0, spellType.PASS, "End your turn"));
 
   // code/enums.js
   var resourceTypeEnum = {
@@ -2595,7 +2591,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   // code/character/Character.js
   var Character = class {
     constructor(opponent) {
-      __publicField(this, "spellBook", getGlobalSpellBook());
+      __publicField(this, "spellBook", globalSpellBook);
       __publicField(this, "healthBar", new ResourceBar(resourceTypeEnum.ENEMY_HEART, 12, 325, 0, 12, 1));
       __publicField(this, "manaBar", new ResourceBar(resourceTypeEnum.ENEMY_MANA, 6, 115, 0, 6, 1));
       __publicField(this, "gameObj", add(gameObjConfigs.enemyChar.gameObjComps));
@@ -2604,12 +2600,88 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   };
   __name(Character, "Character");
 
+  // code/spells/SpellButton.js
+  var SpellButton = class {
+    constructor(spell, player2) {
+      __publicField(this, "active", true);
+      this.spell = spell;
+      this.player = player2;
+      this.gameObj = add(gameObjConfigs.spellButton);
+      this.gameObj.use(text(this.spell.name, { size: 20 }));
+    }
+    addMouseInteractions() {
+      this.gameObj.hovers(() => {
+        if (!this.castThisTurn) {
+          this.gameObj.scaleTo(1.02);
+        }
+      }, () => this.gameObj.scaleTo(1));
+      this.gameObj.clicks(() => {
+        if (!this.castThisTurn && this.player.manaBar.useMana(this.spell.cost)) {
+          this.castThisTurn = true;
+          this.gameObj.color = { r: 160, g: 160, b: 160 };
+          this.gameObj.scaleTo(1);
+          this.spell.spellCast(this.player);
+        }
+      });
+    }
+  };
+  __name(SpellButton, "SpellButton");
+
+  // code/spells/SpellBar.js
+  var SpellBar = class {
+    constructor(player2) {
+      this.player = player2;
+      this.spellBar = this.createSpellBar(this.player);
+    }
+    createSpellBar(player2) {
+      const resourceArray = [];
+      const spritePositions = this.spritePosGrid([100, 400], 3, 2, 600, 200);
+      for (let k = 0; k < 6; k++) {
+        const resource = new SpellButton(globalSpellBook[k], player2);
+        resource.gameObj["pos"] = spritePositions[k];
+        resourceArray.push(resource);
+      }
+      return resourceArray;
+    }
+    spritePosGrid(startingXY, cols, rows, width, height) {
+      const spriteCordinateArray = [];
+      for (let r = 1; r <= rows; r++) {
+        const yOffset = height / rows;
+        const yPos = yOffset / 2 + yOffset * r + startingXY[1];
+        let xPos = 0;
+        for (let c = 1; c <= cols / rows; c++) {
+          const xOffset = width / cols;
+          xPos = xOffset / 2 + xOffset * c + startingXY[0];
+          spriteCordinateArray.push({ x: xPos, y: yPos });
+        }
+      }
+      return spriteCordinateArray;
+    }
+    createSpellButtons(player2) {
+      const spellButtonCordinates = [
+        [107, 385],
+        [320, 385],
+        [533, 385],
+        [107, 435],
+        [320, 435],
+        [533, 435]
+      ];
+      const spellButtonArray = [];
+      for (let i = 0; i < player2.spellBook.length; i++) {
+        spellButtonArray.push(new SpellButton(player2.spellBook[i], spellButtonCordinates[i][0], spellButtonCordinates[i][1], player2));
+      }
+      return spellButtonArray;
+    }
+  };
+  __name(SpellBar, "SpellBar");
+
   // code/character/Player.js
   var Player = class {
     constructor(opponent) {
-      __publicField(this, "spellBook", getGlobalSpellBook());
+      __publicField(this, "spellBook", globalSpellBook);
       __publicField(this, "healthBar", new ResourceBar(resourceTypeEnum.PLAYER_HEART, 12, 325, 0, 12, 1));
       __publicField(this, "manaBar", new ResourceBar(resourceTypeEnum.PLAYER_MANA, 6, 115, 0, 6, 1));
+      __publicField(this, "spellBar", new SpellBar(this));
       __publicField(this, "gameObj", add(gameObjConfigs.playerChar.gameObjComps));
       this.opponent = opponent;
     }

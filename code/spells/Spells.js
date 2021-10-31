@@ -36,9 +36,10 @@ const spellType = {
   PASS: "pass"
 };
 
-export function getGlobalSpellBook() {
 
-  const globalSpellBook = new Array();
+
+
+  export const globalSpellBook = new Array();
 
   globalSpellBook.push(fireball = new Spell("fireball", 1, 1, spellType.DAMAGE, "cast a fireball at your opponent"));
 
@@ -52,7 +53,5 @@ export function getGlobalSpellBook() {
 
   globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, 0, spellType.PASS, "End your turn"));
 
-  return globalSpellBook;
-}
 
 

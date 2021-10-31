@@ -1,25 +1,16 @@
 import "../kaboom";
-import { addSpriteToScreen } from "../UI/SpriteSpawn.js";
+import { gameObjConfigs } from "../gameObjConfigs.js";
+
 
 export class SpellButton {
+active = true;
 
-  castThisTurn = false;
-
-  constructor(spell, posX, posY, player) {
+  constructor(spell, player) {
     this.spell = spell;
     this.player = player;
-    this.gameObj = add([
-      text(this.spell.name, { size: 18 }),
-      pos(posX, posY),
-      area(),
-      z(1),
-      scale(1),
-      origin("center"),
-      "spellButton",
-      color(),
-    ]);
-
-    this.addMouseInteractions();
+    this.gameObj = add(gameObjConfigs.spellButton);
+    this.gameObj.use(text(this.spell.name, {size:20}));
+    //this.addMouseInteractions();
 
   }//end of ctor
 
