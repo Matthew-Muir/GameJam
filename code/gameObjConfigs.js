@@ -26,10 +26,8 @@ export const gameObjConfigs = {
       z(1),
       scale(1.25)
     ],
-    dynamicData: {
-      spriteSpacing: 10,
-      startPositon: [340,340]
-    }
+      startPositon: [340,340],
+    
   },
 
   mana: [
