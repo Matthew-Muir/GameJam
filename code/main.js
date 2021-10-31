@@ -1,15 +1,18 @@
 import "./kaboom";
 import { loadSprites } from "./sprite_data/SpriteAtlasLoading.js";
 import { Character } from "./character/Character.js";
+import { Player } from "./character/Player.js";
+import { Battlefield } from  "./Battlefield/Battlefield.js";
 
 loadSprites();
 
-//const enemy = new Character("enemy", [540, 85], 2, false, true);
-const player = new Character("hero", [95, 305], 2, true, false);
+const enemy = new Character();
+const player = new Player();
+const battlefield = new Battlefield();
 //enemy.opponent = player;
 
 
-
+//player.healthBar.resourceBar.forEach(element => debug.log(`${element.gameObj.pos.x} ${element.gameObj.pos.y}`));
 
 
 /*

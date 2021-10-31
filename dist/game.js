@@ -2367,24 +2367,12 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   function loadSprites() {
     loadSpriteAtlas("sprites/main_char2.png", "code/sprite_data/sprite_atlas_jsons/main_char_sa.json");
     loadSpriteAtlas("sprites/battle_screen.png", "code/sprite_data/sprite_atlas_jsons/battle_screen_sa.json");
+    loadSprite("enemyBar", "sprites/enemyBar.png");
     loadSpriteAtlas("sprites/items.png", "code/sprite_data/sprite_atlas_jsons/items_sa.json");
     loadSprite("heart", "sprites/heart.png");
     loadSpriteAtlas("sprites/wizard_idle.png", "code/sprite_data/sprite_atlas_jsons/enemy_sa.json");
   }
   __name(loadSprites, "loadSprites");
-
-  // code/UI/SpriteSpawn.js
-  function addSpriteToScreen(spriteName, posX, posY, initialAnimation, spriteScale, isXFlipped) {
-    const gameObj = add([
-      sprite(spriteName, { anim: initialAnimation, flipX: isXFlipped }),
-      pos(posX, posY),
-      origin("center"),
-      z(1),
-      scale(spriteScale)
-    ]);
-    return gameObj;
-  }
-  __name(addSpriteToScreen, "addSpriteToScreen");
 
   // code/UI/DisplayPlayerActionText.js
   function spellCastDesc(player2, spell) {
@@ -2456,30 +2444,34 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/enums.js
   var resourceTypeEnum = {
-    HEART: "heart",
-    MANA: "mana",
+    PLAYER_HEART: "playerHeart",
+    PLAYER_MANA: "playerMana",
+    ENEMY_HEART: "enemyHeart",
+    ENEMY_MANA: "enemyMana",
     SPELLBUTTON: "spellButton"
   };
 
   // code/gameObjConfigs.js
   var gameObjConfigs = {
     playerChar: {
-      gameObjArr: [
+      gameObjComps: [
         sprite("hero", { anim: "idle" }),
-        pos(95, 305),
+        pos(95, 310),
         origin("center"),
         z(1),
         scale(2)
       ]
     },
-    enemyChar: [
-      sprite("enemy", { anim: "idle", flipX: true }),
-      pos(540, 85),
-      origin("center"),
-      z(1),
-      scale(2)
-    ],
-    heart: {
+    enemyChar: {
+      gameObjComps: [
+        sprite("enemy", { anim: "idle", flipX: true }),
+        pos(540, 85),
+        origin("center"),
+        z(1),
+        scale(2)
+      ]
+    },
+    playerHeart: {
       gameObjComps: [
         sprite("heart"),
         pos(),
@@ -2487,15 +2479,38 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         z(1),
         scale(1.25)
       ],
-      startPos: [340, 340]
+      startPos: [270, 350]
     },
-    mana: [
-      sprite("mana_crystal"),
-      pos(),
-      origin("center"),
-      z(1),
-      scale(0.65)
-    ],
+    playerMana: {
+      gameObjComps: [
+        sprite("mana_crystal"),
+        pos(),
+        origin("center"),
+        z(1),
+        scale(0.65)
+      ],
+      startPos: [155, 350]
+    },
+    enemyHeart: {
+      gameObjComps: [
+        sprite("heart"),
+        pos(),
+        origin("center"),
+        z(1),
+        scale(1.25)
+      ],
+      startPos: [10, 50]
+    },
+    enemyMana: {
+      gameObjComps: [
+        sprite("mana_crystal"),
+        pos(),
+        origin("center"),
+        z(1),
+        scale(0.65)
+      ],
+      startPos: [20, 20]
+    },
     spellButton: [
       text(),
       pos(),
@@ -2506,13 +2521,24 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       "spellButton",
       color()
     ],
-    spellBar: [
-      sprite("spell_box"),
-      pos(320, 415),
-      origin("center"),
-      z(1),
-      scale({ x: 4, y: 2.5 })
-    ]
+    spellBar: {
+      gameObjComps: [
+        sprite("spell_box"),
+        pos(320, 420),
+        origin("center"),
+        z(0),
+        scale({ x: 4, y: 2.5 })
+      ]
+    },
+    enemyStatBar: {
+      gameObjComps: [
+        sprite("enemyBar"),
+        pos(200, 35),
+        origin("center"),
+        z(0),
+        scale({ x: 5, y: 4 })
+      ]
+    }
   };
 
   // code/character/char_resources/Resource.js
@@ -2526,31 +2552,32 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/character/char_resources/ResourceBar.js
   var ResourceBar = class {
-    constructor(resourceType, totalResources, width2, height2, cols, rows) {
+    constructor(resourceType, totalResources, width, height, cols, rows) {
       this.resourceType = resourceType;
       this.totalResources = totalResources;
-      this.resourceBar = this.createResourceBar(width2, height2, rows, cols, gameObjConfigs[this.resourceType].startPos);
+      this.resourceBar = this.createResourceBar(width, height, rows, cols, gameObjConfigs[this.resourceType].startPos);
     }
-    createResourceBar(width2, height2, rows, cols, startPosition) {
+    createResourceBar(width, height, rows, cols, startPosition) {
       const resourceArray = [];
-      const spritePositions = this.spritePosGrid(startPosition, cols, rows, width2, height2);
+      const spritePositions = this.spritePosGrid(startPosition, cols, rows, width, height);
       for (let k = 0; k < this.totalResources; k++) {
         const resource = new Resource(this.resourceType);
-        resource["pos"] = spritePositions[k];
+        resource.gameObj["pos"] = spritePositions[k];
         resourceArray.push(resource);
       }
+      return resourceArray;
     }
-    spritePosGrid(startingXY, cols, rows, width2, height2) {
+    spritePosGrid(startingXY, cols, rows, width, height) {
       const spriteCordinateArray = [];
       for (let r = 1; r <= rows; r++) {
-        const yOffset = height2 / rows;
+        const yOffset = height / rows;
         const yPos = yOffset / 2 + yOffset * r + startingXY[1];
         let xPos = 0;
-        for (let c = 1; c <= cols; c++) {
-          const xOffset = width2 / cols;
+        for (let c = 1; c <= cols / rows; c++) {
+          const xOffset = width / cols;
           xPos = xOffset / 2 + xOffset * c + startingXY[0];
+          spriteCordinateArray.push({ x: xPos, y: yPos });
         }
-        spriteCordinateArray.push({ x: xPos, y: yPos });
       }
       return spriteCordinateArray;
     }
@@ -2567,26 +2594,41 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/character/Character.js
   var Character = class {
-    constructor(spriteName, screenPos, spriteScaling, isPlayer, flipSpriteX, opponent) {
-      __publicField(this, "health", 12);
-      __publicField(this, "mana", 6);
+    constructor(opponent) {
       __publicField(this, "spellBook", getGlobalSpellBook());
+      __publicField(this, "healthBar", new ResourceBar(resourceTypeEnum.ENEMY_HEART, 12, 325, 0, 12, 1));
+      __publicField(this, "manaBar", new ResourceBar(resourceTypeEnum.ENEMY_MANA, 6, 115, 0, 6, 1));
+      __publicField(this, "gameObj", add(gameObjConfigs.enemyChar.gameObjComps));
       this.opponent = opponent;
-      this.isPlayer = isPlayer;
-      this.healthBar = new ResourceBar(resourceTypeEnum.HEART, 12, 400, 50, 12, 1);
-      this.spritePosition = isPlayer ? [200, 340] : [15, 85];
-      this.gameObj = addSpriteToScreen(spriteName, screenPos[0], screenPos[1], "idle", spriteScaling, flipSpriteX);
     }
   };
   __name(Character, "Character");
 
+  // code/character/Player.js
+  var Player = class {
+    constructor(opponent) {
+      __publicField(this, "spellBook", getGlobalSpellBook());
+      __publicField(this, "healthBar", new ResourceBar(resourceTypeEnum.PLAYER_HEART, 12, 325, 0, 12, 1));
+      __publicField(this, "manaBar", new ResourceBar(resourceTypeEnum.PLAYER_MANA, 6, 115, 0, 6, 1));
+      __publicField(this, "gameObj", add(gameObjConfigs.playerChar.gameObjComps));
+      this.opponent = opponent;
+    }
+  };
+  __name(Player, "Player");
+
+  // code/Battlefield/Battlefield.js
+  var Battlefield = class {
+    constructor() {
+      __publicField(this, "playerMenuBar", add(gameObjConfigs.spellBar.gameObjComps));
+      __publicField(this, "enemyStatBar", add(gameObjConfigs.enemyStatBar.gameObjComps));
+    }
+  };
+  __name(Battlefield, "Battlefield");
+
   // code/main.js
   loadSprites();
-  var player = new Character("hero", [95, 305], 2, true, false);
-  var testTest = add([
-    text("1 Fireball 1", { size: 20 }),
-    origin("center"),
-    pos(width() / 2, height() / 2)
-  ]);
+  var enemy = new Character();
+  var player = new Player();
+  var battlefield = new Battlefield();
 })();
 //# sourceMappingURL=game.js.map
