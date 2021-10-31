@@ -6,15 +6,18 @@ import { Resource } from "./Resource.js";
 export class ResourceBar {
 
   constructor(resourceType, totalResources, width, height, cols, rows) {
-    this.resourceType = resourceTypeEnum[resourceType];
+    this.resourceType = resourceType;
     this.totalResources = totalResources;
-    this.resourceBar = this.createResourceBar(width, height,rows, cols, gameObjConfigs[this.resourceType].startPosition);
+
+    this.resourceBar = this.createResourceBar(width, height,rows, cols, gameObjConfigs[this.resourceType].startPos);
+    
 
   }
 
   createResourceBar(width, height, rows, cols, startPosition) {
     const resourceArray = [];
     const spritePositions = this.spritePosGrid(startPosition, cols, rows, width, height);
+
     for (let k = 0; k < this.totalResources; k++) {
       const resource = new Resource(this.resourceType);
       resource['pos'] = spritePositions[k];
@@ -42,17 +45,14 @@ export class ResourceBar {
     const spriteCordinateArray = [];
     //xPos = ( width / cols ) / 2 + (width/cols * I );
 
-
-    const totalItems = cols * rows;
-
     for (let r = 1; r <= rows; r++) {
 
       const yOffset = height / rows;
       const yPos = ((yOffset) / 2 + (yOffset * r)) + startingXY[1];
 
-      const xPos; // set value in next for loop
+      let xPos = 0; // set value in next for loop
 
-      for (let c = 1; c <= totalItems; c++) {
+      for (let c = 1; c <= cols; c++) {
 
         const xOffset = width / cols;
         xPos = ((xOffset) / 2 + (xOffset * c)) + startingXY[0];

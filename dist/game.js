@@ -2363,13 +2363,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     background: [200, 200, 200]
   });
 
-  // code/sprite_atlas_jsons/SpriteAtlasLoading.js
+  // code/sprite_data/SpriteAtlasLoading.js
   function loadSprites() {
-    loadSpriteAtlas("sprites/main_char2.png", "code/sprite_atlas_jsons/main_char_sa.json");
-    loadSpriteAtlas("sprites/battle_screen.png", "code/sprite_atlas_jsons/battle_screen_sa.json");
-    loadSpriteAtlas("sprites/items.png", "code/sprite_atlas_jsons/items_sa.json");
+    loadSpriteAtlas("sprites/main_char2.png", "code/sprite_data/sprite_atlas_jsons/main_char_sa.json");
+    loadSpriteAtlas("sprites/battle_screen.png", "code/sprite_data/sprite_atlas_jsons/battle_screen_sa.json");
+    loadSpriteAtlas("sprites/items.png", "code/sprite_data/sprite_atlas_jsons/items_sa.json");
     loadSprite("heart", "sprites/heart.png");
-    loadSpriteAtlas("sprites/wizard_idle.png", "code/sprite_atlas_jsons/enemy_sa.json");
+    loadSpriteAtlas("sprites/wizard_idle.png", "code/sprite_data/sprite_atlas_jsons/enemy_sa.json");
   }
   __name(loadSprites, "loadSprites");
 
@@ -2385,128 +2385,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     return gameObj;
   }
   __name(addSpriteToScreen, "addSpriteToScreen");
-
-  // code/health/Heart.js
-  var Heart = class {
-    constructor(isPlayer, spriteSpacing) {
-      __publicField(this, "active", true);
-      __publicField(this, "spriteScale", 1.25);
-      __publicField(this, "spriteName", "heart");
-      this.spritePos = isPlayer ? [340, 340] : [15, 20];
-      this.gameObj = addSpriteToScreen(this.spriteName, this.spritePos[0] + spriteSpacing, this.spritePos[1], null, this.spriteScale, false);
-    }
-  };
-  __name(Heart, "Heart");
-
-  // code/health/HealthBar.js
-  var HealthBar = class {
-    constructor(player2) {
-      __publicField(this, "healthAvailable", 12);
-      this.hearts = this.createHealthBar(player2);
-    }
-    createHealthBar(player2) {
-      const healthBar = [];
-      const spaceBetweenSprites = 25;
-      for (let i = 0; i < player2.health; i++) {
-        healthBar[i] = new Heart(player2.isPlayer, i * spaceBetweenSprites);
-      }
-      return healthBar;
-    }
-    updateHealthBar(damage) {
-      if (damage < 0) {
-        damage = Math.abs(damage);
-        for (let i = 0; i < this.hearts.length; i++) {
-          const currentHeart = this.hearts[i];
-          if (!currentHeart.active) {
-            currentHeart.active = true;
-            currentHeart.gameObj.color = null;
-            damage--;
-            this.healthAvailable++;
-            if (damage == 0) {
-              break;
-            }
-          }
-        }
-      } else {
-        for (let i = this.hearts.length - 1; i >= 0; i--) {
-          const currentHeart = this.hearts[i];
-          if (currentHeart.active) {
-            currentHeart.active = false;
-            currentHeart.gameObj.color = { r: 190, g: 190, b: 190 };
-            damage--;
-            this.healthAvailable--;
-            if (damage == 0) {
-              break;
-            }
-          }
-        }
-      }
-    }
-    isPlayerAlive() {
-      let isAlive = false;
-      this.healthBar.forEach((heart) => {
-        if (heart.active == true) {
-          isAlive = true;
-        }
-      });
-      return isAlive;
-    }
-  };
-  __name(HealthBar, "HealthBar");
-
-  // code/mana/Mana.js
-  var Mana = class {
-    constructor(isPlayers, spriteSpacing) {
-      __publicField(this, "active", true);
-      __publicField(this, "spriteScale", 0.65);
-      __publicField(this, "spriteName", "mana_crystal");
-      this.spritePos = isPlayers ? [210, 340] : [15, 50];
-      this.gameObj = addSpriteToScreen(this.spriteName, this.spritePos[0] + spriteSpacing, this.spritePos[1], null, this.spriteScale, false);
-    }
-  };
-  __name(Mana, "Mana");
-
-  // code/mana/ManaBar.js
-  var ManaBar = class {
-    constructor(player2) {
-      __publicField(this, "manaAvailable", 6);
-      this.manaBar = this.createManaBar(player2);
-    }
-    createManaBar(player2) {
-      const manaBar = [];
-      const spaceBetweenSprites = 20;
-      for (let i = 0; i < player2.mana; i++) {
-        manaBar[i] = new Mana(player2.isPlayer, i * spaceBetweenSprites);
-      }
-      return manaBar;
-    }
-    useMana(manaCost) {
-      if (manaCost <= this.manaAvailable) {
-        for (let i = this.manaBar.length - 1; i >= 0; i--) {
-          const currentManaCrystal = this.manaBar[i];
-          if (currentManaCrystal.active) {
-            currentManaCrystal.active = false;
-            currentManaCrystal.gameObj.color = { r: 190, g: 190, b: 190 };
-            this.manaAvailable--;
-            manaCost--;
-            if (manaCost == 0) {
-              break;
-            }
-          }
-        }
-        return true;
-      }
-      return false;
-    }
-    addMana(amountToAdd) {
-      if (amountToAdd + this.manaAvailable > 6) {
-        this.manaAvailable = 6;
-      } else {
-        this.manaAvailable += amountToAdd;
-      }
-    }
-  };
-  __name(ManaBar, "ManaBar");
 
   // code/UI/DisplayPlayerActionText.js
   function spellCastDesc(player2, spell) {
@@ -2576,65 +2454,116 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   }
   __name(getGlobalSpellBook, "getGlobalSpellBook");
 
-  // code/spells/SpellButton.js
-  var SpellButton = class {
-    constructor(spell, posX, posY, player2) {
-      __publicField(this, "castThisTurn", false);
-      this.spell = spell;
-      this.player = player2;
-      this.gameObj = add([
-        text(this.spell.name, { size: 18 }),
-        pos(posX, posY),
-        area(),
-        z(1),
-        scale(1),
-        origin("center"),
-        "spellButton",
-        color()
-      ]);
-      this.addMouseInteractions();
-    }
-    addMouseInteractions() {
-      this.gameObj.hovers(() => {
-        if (!this.castThisTurn) {
-          this.gameObj.scaleTo(1.02);
-        }
-      }, () => this.gameObj.scaleTo(1));
-      this.gameObj.clicks(() => {
-        if (!this.castThisTurn && this.player.manaBar.useMana(this.spell.cost)) {
-          this.castThisTurn = true;
-          this.gameObj.color = { r: 160, g: 160, b: 160 };
-          this.gameObj.scaleTo(1);
-          this.spell.spellCast(this.player);
-        }
-      });
-    }
+  // code/enums.js
+  var resourceTypeEnum = {
+    HEART: "heart",
+    MANA: "mana",
+    SPELLBUTTON: "spellButton"
   };
-  __name(SpellButton, "SpellButton");
 
-  // code/spells/SpellBar.js
-  var SpellBar = class {
-    constructor(player2) {
-      __publicField(this, "spellBarBackground", addSpriteToScreen("selection_box", 320, 415, null, { x: 4, y: 2.5 }, false));
-      this.spells = this.createSpellButtons(player2);
-    }
-    createSpellButtons(player2) {
-      const spellButtonCordinates = [
-        [107, 385],
-        [320, 385],
-        [533, 385],
-        [107, 435],
-        [320, 435],
-        [533, 435]
-      ];
-      const spellButtonArray = [];
-      for (let i = 0; i < player2.spellBook.length; i++) {
-        spellButtonArray.push(new SpellButton(player2.spellBook[i], spellButtonCordinates[i][0], spellButtonCordinates[i][1], player2));
-      }
-      return spellButtonArray;
+  // code/gameObjConfigs.js
+  var gameObjConfigs = {
+    playerChar: {
+      gameObjArr: [
+        sprite("hero", { anim: "idle" }),
+        pos(95, 305),
+        origin("center"),
+        z(1),
+        scale(2)
+      ]
+    },
+    enemyChar: [
+      sprite("enemy", { anim: "idle", flipX: true }),
+      pos(540, 85),
+      origin("center"),
+      z(1),
+      scale(2)
+    ],
+    heart: {
+      gameObjComps: [
+        sprite("heart"),
+        pos(),
+        origin("center"),
+        z(1),
+        scale(1.25)
+      ],
+      startPos: [340, 340]
+    },
+    mana: [
+      sprite("mana_crystal"),
+      pos(),
+      origin("center"),
+      z(1),
+      scale(0.65)
+    ],
+    spellButton: [
+      text(),
+      pos(),
+      area(),
+      z(1),
+      scale(1),
+      origin("center"),
+      "spellButton",
+      color()
+    ],
+    spellBar: [
+      sprite("spell_box"),
+      pos(320, 415),
+      origin("center"),
+      z(1),
+      scale({ x: 4, y: 2.5 })
+    ]
+  };
+
+  // code/character/char_resources/Resource.js
+  var Resource = class {
+    constructor(resourceType) {
+      __publicField(this, "active", true);
+      this.gameObj = add(gameObjConfigs[resourceType].gameObjComps);
     }
   };
-  __name(SpellBar, "SpellBar");
+  __name(Resource, "Resource");
+
+  // code/character/char_resources/ResourceBar.js
+  var ResourceBar = class {
+    constructor(resourceType, totalResources, width2, height2, cols, rows) {
+      this.resourceType = resourceType;
+      this.totalResources = totalResources;
+      this.resourceBar = this.createResourceBar(width2, height2, rows, cols, gameObjConfigs[this.resourceType].startPos);
+    }
+    createResourceBar(width2, height2, rows, cols, startPosition) {
+      const resourceArray = [];
+      const spritePositions = this.spritePosGrid(startPosition, cols, rows, width2, height2);
+      for (let k = 0; k < this.totalResources; k++) {
+        const resource = new Resource(this.resourceType);
+        resource["pos"] = spritePositions[k];
+        resourceArray.push(resource);
+      }
+    }
+    spritePosGrid(startingXY, cols, rows, width2, height2) {
+      const spriteCordinateArray = [];
+      for (let r = 1; r <= rows; r++) {
+        const yOffset = height2 / rows;
+        const yPos = yOffset / 2 + yOffset * r + startingXY[1];
+        let xPos = 0;
+        for (let c = 1; c <= cols; c++) {
+          const xOffset = width2 / cols;
+          xPos = xOffset / 2 + xOffset * c + startingXY[0];
+        }
+        spriteCordinateArray.push({ x: xPos, y: yPos });
+      }
+      return spriteCordinateArray;
+    }
+    createHealthBar(player2) {
+      const healthBar = [];
+      const spaceBetweenSprites = 25;
+      for (let i = 0; i < player2.health; i++) {
+        healthBar[i] = new Heart(player2.isPlayer, i * spaceBetweenSprites);
+      }
+      return healthBar;
+    }
+  };
+  __name(ResourceBar, "ResourceBar");
 
   // code/character/Character.js
   var Character = class {
@@ -2644,9 +2573,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       __publicField(this, "spellBook", getGlobalSpellBook());
       this.opponent = opponent;
       this.isPlayer = isPlayer;
-      this.healthBar = new HealthBar(this);
-      this.manaBar = new ManaBar(this);
-      this.spellBar = isPlayer ? new SpellBar(this) : null;
+      this.healthBar = new ResourceBar(resourceTypeEnum.HEART, 12, 400, 50, 12, 1);
       this.spritePosition = isPlayer ? [200, 340] : [15, 85];
       this.gameObj = addSpriteToScreen(spriteName, screenPos[0], screenPos[1], "idle", spriteScaling, flipSpriteX);
     }
@@ -2655,9 +2582,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/main.js
   loadSprites();
-  var enemy = new Character("enemy", [540, 85], 2, false, true);
-  var player = new Character("hero", [95, 305], 2, true, false, enemy);
-  enemy.opponent = player;
+  var player = new Character("hero", [95, 305], 2, true, false);
   var testTest = add([
     text("1 Fireball 1", { size: 20 }),
     origin("center"),

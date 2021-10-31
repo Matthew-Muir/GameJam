@@ -4,8 +4,8 @@ import { ManaBar } from "../mana/ManaBar.js";
 import { getGlobalSpellBook } from "../spells/Spells.js";
 import { addSpriteToScreen } from "../UI/SpriteSpawn.js";
 import { SpellBar } from "../spells/SpellBar.js";
-import { ResourceBar } from "./char_resources.js";
-import { resourceTypeEnum } from "../enum.js";
+import { ResourceBar } from "./char_resources/ResourceBar.js";
+import { resourceTypeEnum } from "../enums.js";
 
 export class Character {
 

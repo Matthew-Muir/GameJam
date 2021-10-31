@@ -11,7 +11,7 @@ export class Resource {
   active = true;
   
   constructor(resourceType){
-    gameObj = add(gameObjConfigs[resourceType].gameObjComps);
+    this.gameObj = add(gameObjConfigs[resourceType].gameObjComps);
   }
 }
 

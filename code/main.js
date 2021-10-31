@@ -1,5 +1,5 @@
 import "./kaboom";
-import { loadSprites } from "./sprite_atlas_jsons/SpriteAtlasLoading.js";
+import { loadSprites } from "./sprite_data/SpriteAtlasLoading.js";
 import { Character } from "./character/Character.js";
 
 loadSprites();
@@ -8,12 +8,6 @@ loadSprites();
 const player = new Character("hero", [95, 305], 2, true, false);
 //enemy.opponent = player;
 
-
-const testTest = add([
-  text("1 Fireball 1", {size:20}),
-  origin("center"),
-  pos(width()/2, height()/2)
-]);
 
 
 

@@ -26,7 +26,7 @@ export const gameObjConfigs = {
       z(1),
       scale(1.25)
     ],
-      startPositon: [340,340],
+      startPos: [340,340],
     
   },
 
