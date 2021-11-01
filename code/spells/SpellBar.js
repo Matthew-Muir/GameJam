@@ -16,11 +16,13 @@ export class SpellBar {
     const resourceArray = [];
     const spritePositions = this.spritePosGrid([0, 320], 3, 2, 640,100);
 
-    for (let k = 0; k < 6; k++) {
+    for (let k = 0; k < 1; k++) {
       const resource = new SpellButton(globalSpellBook[k],player);
       //debug.log(spritePositions.length);
-      resource.gameObj['pos'] = spritePositions[k];
+      //resource.gameObj['pos'] = spritePositions[k];
+      resource.gameObj.use(pos(100,100));
       resourceArray.push(resource);
+//left off here trying to figure our issue. Seems to be when adding the pos cords with an object.
     }
     //fix the cordinates seem to be way out of wack
 

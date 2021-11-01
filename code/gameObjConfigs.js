@@ -84,8 +84,6 @@ export const gameObjConfigs = {
     origin("center"),
     "spellButton",
     color(),
-    hovers(),
-    clicks(),
   ],
 
   spellBar: {

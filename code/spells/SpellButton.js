@@ -12,7 +12,7 @@ export class SpellButton {
     this.gameObj.use(text(this.spell.name, { size: 20 }));
     //this.gameObj.hovers();
     //this.gameObj.clicks(() => debug.log("click"));
-    //this.addMouseInteractions();
+    this.addMouseInteractions();
 
 
   }//end of ctor
@@ -33,6 +33,7 @@ export class SpellButton {
         this.active = true;
         this.gameObj.color = { r: 160, g: 160, b: 160 };
         this.gameObj.scaleTo(1);
+        debug.log("CLICK");
         //this.spell.spellCast(this.player);
       }
 

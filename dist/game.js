@@ -2522,9 +2522,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       scale(),
       origin("center"),
       "spellButton",
-      color(),
-      hovers(),
-      clicks()
+      color()
     ],
     spellBar: {
       gameObjComps: [
@@ -2618,6 +2616,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       this.player = player2;
       this.gameObj = add(gameObjConfigs.spellButton);
       this.gameObj.use(text(this.spell.name, { size: 20 }));
+      this.addMouseInteractions();
     }
     addMouseInteractions() {
       this.gameObj.hovers(() => {
@@ -2630,6 +2629,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
           this.active = true;
           this.gameObj.color = { r: 160, g: 160, b: 160 };
           this.gameObj.scaleTo(1);
+          debug.log("CLICK");
         }
       });
     }
@@ -2645,9 +2645,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     createSpellBar(player2) {
       const resourceArray = [];
       const spritePositions = this.spritePosGrid([0, 320], 3, 2, 640, 100);
-      for (let k = 0; k < 6; k++) {
+      for (let k = 0; k < 1; k++) {
         const resource = new SpellButton(globalSpellBook[k], player2);
-        resource.gameObj["pos"] = spritePositions[k];
+        resource.gameObj.use(pos(100, 100));
         resourceArray.push(resource);
       }
       return resourceArray;
@@ -2720,9 +2720,6 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     "spellButton",
     color()
   ]);
-  foo.hovers((sb) => {
-    sb.scaleTo(1.02);
-  }, (sb) => sb.scaleTo(1));
   foo.clicks(() => debug.log("clicks"));
 })();
 //# sourceMappingURL=game.js.map
