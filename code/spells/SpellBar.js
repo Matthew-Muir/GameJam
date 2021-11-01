@@ -14,14 +14,15 @@ export class SpellBar {
 
   createSpellBar(player) {
     const resourceArray = [];
-    const spritePositions = this.spritePosGrid([100, 400], 3, 2, 600, 200);
+    const spritePositions = this.spritePosGrid([0, 320], 3, 2, 640,100);
 
     for (let k = 0; k < 6; k++) {
       const resource = new SpellButton(globalSpellBook[k],player);
+      //debug.log(spritePositions.length);
       resource.gameObj['pos'] = spritePositions[k];
       resourceArray.push(resource);
     }
-    //fix the cordinates don't appear to be being assigned to the SBs
+    //fix the cordinates seem to be way out of wack
 
     return resourceArray;
   }
@@ -37,7 +38,7 @@ export class SpellBar {
 
       let xPos = 0; // set value in next for loop
 
-      for (let c = 1; c <= cols / rows; c++) {
+      for (let c = 0; c < cols; c++) {
 
         const xOffset = width / cols;
         xPos = ((xOffset) / 2 + (xOffset * c)) + startingXY[0];

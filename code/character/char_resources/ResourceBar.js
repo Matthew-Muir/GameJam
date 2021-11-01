@@ -11,7 +11,6 @@ export class ResourceBar {
 
     this.resourceBar = this.createResourceBar(width, height, rows, cols, gameObjConfigs[this.resourceType].startPos);
 
-
   }
 
   createResourceBar(width, height, rows, cols, startPosition) {
@@ -23,9 +22,7 @@ export class ResourceBar {
       resource.gameObj['pos'] = spritePositions[k];
       resourceArray.push(resource);
     }
-
     return resourceArray;
-
   }
 
   //returns an array of objects;
@@ -45,25 +42,17 @@ export class ResourceBar {
         xPos = ((xOffset) / 2 + (xOffset * c)) + startingXY[0];
         spriteCordinateArray.push({ x: xPos, y: yPos });
       }
-
     }
-
     return spriteCordinateArray;
-
-
   }
 
-
-  createHealthBar(player) {
-    const healthBar = [];
-    const spaceBetweenSprites = 25;
-
-    for (let i = 0; i < player.health; i++) {
-      healthBar[i] = new Heart(player.isPlayer, i * spaceBetweenSprites);
+  enoughResAvailable(neededAmount) {
+    if(this.totalResources >= neededAmount){
+      return true;
     }
-
-    return healthBar;
+    return false;
   }
+
 
 
 }

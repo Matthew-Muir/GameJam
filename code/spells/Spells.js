@@ -41,15 +41,15 @@ const spellType = {
 
   export const globalSpellBook = new Array();
 
-  globalSpellBook.push(fireball = new Spell("fireball", 1, 1, spellType.DAMAGE, "cast a fireball at your opponent"));
+  globalSpellBook.push(fireball = new Spell("Fireball", 1, 1, spellType.DAMAGE, "cast a fireball at your opponent"));
 
-  globalSpellBook.push(frost = new Spell("frost", 2, 2, spellType.DAMAGE, "freeze your opponent"));
+  globalSpellBook.push(frost = new Spell("Frost", 2, 2, spellType.DAMAGE, "freeze your opponent"));
 
-  globalSpellBook.push(heal = new Spell("heal", 3, -3, spellType.HEAL, "Heal yourself"));
+  globalSpellBook.push(heal = new Spell("Heal", 3, -3, spellType.HEAL, "Heal yourself"));
 
-  globalSpellBook.push(lightning = new Spell("lightning", 4, 4, spellType.DAMAGE, "shock your opponent"));
+  globalSpellBook.push(lightning = new Spell("Lightning", 4, 4, spellType.DAMAGE, "shock your opponent"));
 
-  globalSpellBook.push(blindness = new Spell("blindness", 5, 5, spellType.DAMAGE, "Your opponents next attack is random"));
+  globalSpellBook.push(blindness = new Spell("Blindness", 5, 5, spellType.DAMAGE, "Your opponents next attack is random"));
 
   globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, 0, spellType.PASS, "End your turn"));
 

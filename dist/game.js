@@ -2431,11 +2431,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     PASS: "pass"
   };
   var globalSpellBook = new Array();
-  globalSpellBook.push(fireball = new Spell("fireball", 1, 1, spellType.DAMAGE, "cast a fireball at your opponent"));
-  globalSpellBook.push(frost = new Spell("frost", 2, 2, spellType.DAMAGE, "freeze your opponent"));
-  globalSpellBook.push(heal = new Spell("heal", 3, -3, spellType.HEAL, "Heal yourself"));
-  globalSpellBook.push(lightning = new Spell("lightning", 4, 4, spellType.DAMAGE, "shock your opponent"));
-  globalSpellBook.push(blindness = new Spell("blindness", 5, 5, spellType.DAMAGE, "Your opponents next attack is random"));
+  globalSpellBook.push(fireball = new Spell("Fireball", 1, 1, spellType.DAMAGE, "cast a fireball at your opponent"));
+  globalSpellBook.push(frost = new Spell("Frost", 2, 2, spellType.DAMAGE, "freeze your opponent"));
+  globalSpellBook.push(heal = new Spell("Heal", 3, -3, spellType.HEAL, "Heal yourself"));
+  globalSpellBook.push(lightning = new Spell("Lightning", 4, 4, spellType.DAMAGE, "shock your opponent"));
+  globalSpellBook.push(blindness = new Spell("Blindness", 5, 5, spellType.DAMAGE, "Your opponents next attack is random"));
   globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, 0, spellType.PASS, "End your turn"));
 
   // code/enums.js
@@ -2467,6 +2467,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         scale(2)
       ]
     },
+    enemyCharName: [
+      text(),
+      pos(200, 20),
+      z(1),
+      scale(1),
+      origin("center")
+    ],
     playerHeart: {
       gameObjComps: [
         sprite("heart"),
@@ -2495,7 +2502,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         z(1),
         scale(1.25)
       ],
-      startPos: [10, 50]
+      startPos: [-10, 50]
     },
     enemyMana: {
       gameObjComps: [
@@ -2505,17 +2512,19 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         z(1),
         scale(0.65)
       ],
-      startPos: [20, 20]
+      startPos: [0, 20]
     },
     spellButton: [
-      text(),
-      pos(),
+      text("foo"),
+      pos(1, 1),
       area(),
       z(1),
-      scale(1),
+      scale(),
       origin("center"),
       "spellButton",
-      color()
+      color(),
+      hovers(),
+      clicks()
     ],
     spellBar: {
       gameObjComps: [
@@ -2577,25 +2586,26 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
       return spriteCordinateArray;
     }
-    createHealthBar(player2) {
-      const healthBar = [];
-      const spaceBetweenSprites = 25;
-      for (let i = 0; i < player2.health; i++) {
-        healthBar[i] = new Heart(player2.isPlayer, i * spaceBetweenSprites);
+    enoughResAvailable(neededAmount) {
+      if (this.totalResources >= neededAmount) {
+        return true;
       }
-      return healthBar;
+      return false;
     }
   };
   __name(ResourceBar, "ResourceBar");
 
   // code/character/Character.js
   var Character = class {
-    constructor(opponent) {
+    constructor(opponent, name) {
       __publicField(this, "spellBook", globalSpellBook);
       __publicField(this, "healthBar", new ResourceBar(resourceTypeEnum.ENEMY_HEART, 12, 325, 0, 12, 1));
       __publicField(this, "manaBar", new ResourceBar(resourceTypeEnum.ENEMY_MANA, 6, 115, 0, 6, 1));
       __publicField(this, "gameObj", add(gameObjConfigs.enemyChar.gameObjComps));
       this.opponent = opponent;
+      this.name = name;
+      this.charNameObj = add(gameObjConfigs.enemyCharName);
+      this.charNameObj.use(text(this.name, { size: 22 }));
     }
   };
   __name(Character, "Character");
@@ -2611,16 +2621,15 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     addMouseInteractions() {
       this.gameObj.hovers(() => {
-        if (!this.castThisTurn) {
+        if (!this.active) {
           this.gameObj.scaleTo(1.02);
         }
       }, () => this.gameObj.scaleTo(1));
       this.gameObj.clicks(() => {
-        if (!this.castThisTurn && this.player.manaBar.useMana(this.spell.cost)) {
-          this.castThisTurn = true;
+        if (!this.active && this.player.manaBar.enoughResAvailable(this.spell.cost)) {
+          this.active = true;
           this.gameObj.color = { r: 160, g: 160, b: 160 };
           this.gameObj.scaleTo(1);
-          this.spell.spellCast(this.player);
         }
       });
     }
@@ -2635,7 +2644,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     }
     createSpellBar(player2) {
       const resourceArray = [];
-      const spritePositions = this.spritePosGrid([100, 400], 3, 2, 600, 200);
+      const spritePositions = this.spritePosGrid([0, 320], 3, 2, 640, 100);
       for (let k = 0; k < 6; k++) {
         const resource = new SpellButton(globalSpellBook[k], player2);
         resource.gameObj["pos"] = spritePositions[k];
@@ -2649,7 +2658,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         const yOffset = height / rows;
         const yPos = yOffset / 2 + yOffset * r + startingXY[1];
         let xPos = 0;
-        for (let c = 1; c <= cols / rows; c++) {
+        for (let c = 0; c < cols; c++) {
           const xOffset = width / cols;
           xPos = xOffset / 2 + xOffset * c + startingXY[0];
           spriteCordinateArray.push({ x: xPos, y: yPos });
@@ -2698,8 +2707,22 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/main.js
   loadSprites();
-  var enemy = new Character();
+  var enemy = new Character(void 0, "Vaouse");
   var player = new Player();
   var battlefield = new Battlefield();
+  var foo = add([
+    text("test button", { size: 18 }),
+    pos(200, 200),
+    area(),
+    z(1),
+    scale(1),
+    origin("center"),
+    "spellButton",
+    color()
+  ]);
+  foo.hovers((sb) => {
+    sb.scaleTo(1.02);
+  }, (sb) => sb.scaleTo(1));
+  foo.clicks(() => debug.log("clicks"));
 })();
 //# sourceMappingURL=game.js.map

@@ -20,6 +20,14 @@ export const gameObjConfigs = {
       scale(2),
     ],
   },
+
+    enemyCharName: [
+    text(), //define in ctor
+    pos(200,20),
+    z(1),
+    scale(1),
+    origin("center"),
+  ],
   //This object is a resource and must be an object. One to add its basic comps. The other is a seed for creating a ResourceBar obj.
   playerHeart: {
     gameObjComps: [
@@ -52,7 +60,7 @@ export const gameObjConfigs = {
       z(1),
       scale(1.25)
     ],
-    startPos: [10, 50],
+    startPos: [-10, 50],
   },
 
   enemyMana: {
@@ -64,18 +72,20 @@ export const gameObjConfigs = {
         z(1),
         scale(.65)
       ],
-    startPos: [20, 20]
+    startPos: [0, 20]
   },
 
   spellButton: [
-    text(), //define in Spellbutton
-    pos(),//define in spellbutton
+    text("foo"), //define in Spellbutton
+    pos(1,1),//define in spellbutton
     area(),
     z(1),
-    scale(1),
+    scale(),
     origin("center"),
     "spellButton",
     color(),
+    hovers(),
+    clicks(),
   ],
 
   spellBar: {
