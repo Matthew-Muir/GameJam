@@ -47,10 +47,53 @@ export class ResourceBar {
   }
 
   enoughResAvailable(neededAmount) {
-    if(this.totalResources >= neededAmount){
+    if (this.totalResources >= neededAmount) {
       return true;
     }
     return false;
+  }
+
+  updateStatusBar(amountOfChange) {
+    //Negative dmg is equal to healing
+    if (amountOfChange < 0) {
+
+      amountOfChange = Math.abs(amountOfChange);
+      for (let i = 0; i < this.resourceBar.length; i++) {
+
+        let currentResource = this.resourceBar[i];
+
+        if (!currentResource.active) {
+          currentResource.active = true;
+          currentResource.color = null;
+          this.totalResources++;
+          amountOfChange--;
+          
+          if (amountOfChange == 0) {
+            break;
+          }
+        }
+      }
+    }
+
+    else {
+
+      for (let k = this.resourceBar.length - 1; k >= 0; k--) {
+
+        let currentResource = this.resourceBar[k];
+
+        if (currentResource.active) {
+          currentResource.active = false;
+          currentResource.gameObj.color = rgb(190, 190, 190);
+          this.totalResources--;
+          amountOfChange--;
+
+          if (amountOfChange == 0) {
+            break;
+          }
+        }
+      }
+    }
+
   }
 
 

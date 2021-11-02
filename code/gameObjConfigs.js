@@ -76,8 +76,8 @@ export const gameObjConfigs = {
   },
 
   spellButton: [
-    text("foo"), //define in Spellbutton
-    pos(1,1),//define in spellbutton
+    text(), //define in Spellbutton
+    pos(),//define in spellbutton
     area(),
     z(1),
     scale(),

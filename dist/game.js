@@ -2376,13 +2376,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/UI/DisplayPlayerActionText.js
   function spellCastDesc(player2, spell) {
-    const test = player2.spellBar.spells[0].gameObj.area;
-    player2.spellBar.spells.forEach((sb) => {
-      sb.gameObj.area = 0;
-      sb.gameObj.z = 0;
-    });
+    player2.spellBar.changeVisibility();
     const battleText = add([
-      pos(28, 390),
+      pos(30, 400),
       text(spell.description, {
         size: 20,
         width: 600
@@ -2390,11 +2386,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       origin("left"),
       z(1)
     ]);
-    wait(2.5, () => {
-      player2.spellBar.spells.forEach((sb) => {
-        sb.gameObj.area = test;
-        sb.gameObj.z = 1;
-      });
+    wait(2.1, () => {
+      player2.spellBar.changeVisibility();
       destroy(battleText);
     });
   }
@@ -2412,14 +2405,17 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     spellCast(player2) {
       switch (this.spellType) {
         case spellType.DAMAGE:
-          player2.opponent.healthBar.updateHealthBar(this.damage);
+          player2.manaBar.updateStatusBar(this.cost);
+          player2.opponent.healthBar.updateStatusBar(this.damage);
           spellCastDesc(player2, this);
           break;
         case spellType.HEAL:
-          player2.healthBar.updateHealthBar(this.damage);
+          player2.manaBar.updateStatusBar(this.cost);
+          player2.healthBar.updateStatusBar(this.damage);
           spellCastDesc(player2, this);
           break;
         case spellType.PASS:
+          spellCastDesc(player2, this);
           break;
       }
     }
@@ -2431,10 +2427,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     PASS: "pass"
   };
   var globalSpellBook = new Array();
-  globalSpellBook.push(fireball = new Spell("Fireball", 1, 1, spellType.DAMAGE, "cast a fireball at your opponent"));
-  globalSpellBook.push(frost = new Spell("Frost", 2, 2, spellType.DAMAGE, "freeze your opponent"));
-  globalSpellBook.push(heal = new Spell("Heal", 3, -3, spellType.HEAL, "Heal yourself"));
-  globalSpellBook.push(lightning = new Spell("Lightning", 4, 4, spellType.DAMAGE, "shock your opponent"));
+  globalSpellBook.push(fireball = new Spell("Fireball", 1, 1, spellType.DAMAGE, "You cast a fireball at your opponent..."));
+  globalSpellBook.push(frost = new Spell("Frost", 2, 2, spellType.DAMAGE, "You Shoot a frost bolt your opponent..."));
+  globalSpellBook.push(heal = new Spell("Heal", 3, -3, spellType.HEAL, "You've healed yourself"));
+  globalSpellBook.push(lightning = new Spell("Lightning", 4, 4, spellType.DAMAGE, "Electric shock your opponent"));
   globalSpellBook.push(blindness = new Spell("Blindness", 5, 5, spellType.DAMAGE, "Your opponents next attack is random"));
   globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, 0, spellType.PASS, "End your turn"));
 
@@ -2515,8 +2511,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       startPos: [0, 20]
     },
     spellButton: [
-      text("foo"),
-      pos(1, 1),
+      text(),
+      pos(),
       area(),
       z(1),
       scale(),
@@ -2590,6 +2586,36 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
       return false;
     }
+    updateStatusBar(amountOfChange) {
+      if (amountOfChange < 0) {
+        amountOfChange = Math.abs(amountOfChange);
+        for (let i = 0; i < this.resourceBar.length; i++) {
+          let currentResource = this.resourceBar[i];
+          if (!currentResource.active) {
+            currentResource.active = true;
+            currentResource.color = null;
+            this.totalResources++;
+            amountOfChange--;
+            if (amountOfChange == 0) {
+              break;
+            }
+          }
+        }
+      } else {
+        for (let k = this.resourceBar.length - 1; k >= 0; k--) {
+          let currentResource = this.resourceBar[k];
+          if (currentResource.active) {
+            currentResource.active = false;
+            currentResource.gameObj.color = rgb(190, 190, 190);
+            this.totalResources--;
+            amountOfChange--;
+            if (amountOfChange == 0) {
+              break;
+            }
+          }
+        }
+      }
+    }
   };
   __name(ResourceBar, "ResourceBar");
 
@@ -2615,21 +2641,21 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       this.spell = spell;
       this.player = player2;
       this.gameObj = add(gameObjConfigs.spellButton);
-      this.gameObj.use(text(this.spell.name, { size: 20 }));
+      this.gameObj.use(text(this.spell.name, { size: 19 }));
       this.addMouseInteractions();
     }
     addMouseInteractions() {
       this.gameObj.hovers(() => {
-        if (!this.active) {
-          this.gameObj.scaleTo(1.02);
+        if (this.active) {
+          this.gameObj.scaleTo(1.1);
         }
       }, () => this.gameObj.scaleTo(1));
       this.gameObj.clicks(() => {
-        if (!this.active && this.player.manaBar.enoughResAvailable(this.spell.cost)) {
-          this.active = true;
-          this.gameObj.color = { r: 160, g: 160, b: 160 };
+        if (this.active && this.player.manaBar.enoughResAvailable(this.spell.cost)) {
+          this.active = false;
+          this.gameObj.color = rgb(160, 160, 160);
           this.gameObj.scaleTo(1);
-          debug.log("CLICK");
+          this.spell.spellCast(this.player);
         }
       });
     }
@@ -2645,9 +2671,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     createSpellBar(player2) {
       const resourceArray = [];
       const spritePositions = this.spritePosGrid([0, 320], 3, 2, 640, 100);
-      for (let k = 0; k < 1; k++) {
+      for (let k = 0; k < 6; k++) {
         const resource = new SpellButton(globalSpellBook[k], player2);
-        resource.gameObj.use(pos(100, 100));
+        resource.gameObj["pos"] = vec2(spritePositions[k]);
         resourceArray.push(resource);
       }
       return resourceArray;
@@ -2681,6 +2707,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }
       return spellButtonArray;
     }
+    changeVisibility() {
+      this.spellBar.forEach((sb) => sb.gameObj.hidden = !sb.gameObj.hidden);
+    }
   };
   __name(SpellBar, "SpellBar");
 
@@ -2707,19 +2736,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/main.js
   loadSprites();
-  var enemy = new Character(void 0, "Vaouse");
-  var player = new Player();
+  var enemy = new Character(void 0, "Merlin");
+  var player = new Player(enemy);
   var battlefield = new Battlefield();
-  var foo = add([
-    text("test button", { size: 18 }),
-    pos(200, 200),
-    area(),
-    z(1),
-    scale(1),
-    origin("center"),
-    "spellButton",
-    color()
-  ]);
-  foo.clicks(() => debug.log("clicks"));
+  enemy.opponent = player;
 })();
 //# sourceMappingURL=game.js.map
