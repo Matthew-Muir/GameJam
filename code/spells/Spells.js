@@ -17,18 +17,23 @@ class Spell {
       case spellType.DAMAGE:
         player.manaBar.updateStatusBar(this.cost);
         player.opponent.healthBar.updateStatusBar(this.damage);
-        spellCastDesc(player, this);
-        break;
+        spellCastDesc(player, this.description);
+        return true;
 
       case spellType.HEAL:
+      if(player.healthBar.isResourceFull()){
+        spellCastDesc(player,"Health already full");
+        return false;
+      }
         player.manaBar.updateStatusBar(this.cost);
         player.healthBar.updateStatusBar(this.damage);
-        spellCastDesc(player, this);
-        break;
+        spellCastDesc(player, this.description);
+        return true;
 
       case spellType.PASS:
-        spellCastDesc(player, this);
-        break;
+        spellCastDesc(player, this.description);
+        return true;
+
     }
   }
 }
@@ -54,7 +59,7 @@ globalSpellBook.push(lightning = new Spell("Lightning", 4, 4, spellType.DAMAGE, 
 
 globalSpellBook.push(blindness = new Spell("Blindness", 5, 5, spellType.DAMAGE, "Your opponents next attack is random"));
 
-globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, 0, spellType.PASS, "End your turn"));
+globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, 0, spellType.PASS, "You end your turn..."));
 
 
 

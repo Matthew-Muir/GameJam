@@ -2375,11 +2375,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   __name(loadSprites, "loadSprites");
 
   // code/UI/DisplayPlayerActionText.js
-  function spellCastDesc(player2, spell) {
+  function spellCastDesc(player2, spellDesc) {
     player2.spellBar.changeVisibility();
     const battleText = add([
       pos(30, 400),
-      text(spell.description, {
+      text(spellDesc, {
         size: 20,
         width: 600
       }),
@@ -2407,16 +2407,20 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         case spellType.DAMAGE:
           player2.manaBar.updateStatusBar(this.cost);
           player2.opponent.healthBar.updateStatusBar(this.damage);
-          spellCastDesc(player2, this);
-          break;
+          spellCastDesc(player2, this.description);
+          return true;
         case spellType.HEAL:
+          if (player2.healthBar.isResourceFull()) {
+            spellCastDesc(player2, "Health already full");
+            return false;
+          }
           player2.manaBar.updateStatusBar(this.cost);
           player2.healthBar.updateStatusBar(this.damage);
-          spellCastDesc(player2, this);
-          break;
+          spellCastDesc(player2, this.description);
+          return true;
         case spellType.PASS:
-          spellCastDesc(player2, this);
-          break;
+          spellCastDesc(player2, this.description);
+          return true;
       }
     }
   };
@@ -2432,7 +2436,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   globalSpellBook.push(heal = new Spell("Heal", 3, -3, spellType.HEAL, "You've healed yourself"));
   globalSpellBook.push(lightning = new Spell("Lightning", 4, 4, spellType.DAMAGE, "Electric shock your opponent"));
   globalSpellBook.push(blindness = new Spell("Blindness", 5, 5, spellType.DAMAGE, "Your opponents next attack is random"));
-  globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, 0, spellType.PASS, "End your turn"));
+  globalSpellBook.push(meditate = new Spell("Pass-Turn", 0, 0, spellType.PASS, "You end your turn..."));
 
   // code/enums.js
   var resourceTypeEnum = {
@@ -2551,9 +2555,10 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
 
   // code/character/char_resources/ResourceBar.js
   var ResourceBar = class {
-    constructor(resourceType, totalResources, width, height, cols, rows) {
+    constructor(resourceType, totalResources, maxResources, width, height, cols, rows) {
       this.resourceType = resourceType;
       this.totalResources = totalResources;
+      this.maxResources = maxResources;
       this.resourceBar = this.createResourceBar(width, height, rows, cols, gameObjConfigs[this.resourceType].startPos);
     }
     createResourceBar(width, height, rows, cols, startPosition) {
@@ -2616,6 +2621,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
         }
       }
     }
+    isResourceFull() {
+      if (this.totalResources == this.maxResources) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   };
   __name(ResourceBar, "ResourceBar");
 
@@ -2623,8 +2635,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var Character = class {
     constructor(opponent, name) {
       __publicField(this, "spellBook", globalSpellBook);
-      __publicField(this, "healthBar", new ResourceBar(resourceTypeEnum.ENEMY_HEART, 12, 325, 0, 12, 1));
-      __publicField(this, "manaBar", new ResourceBar(resourceTypeEnum.ENEMY_MANA, 6, 115, 0, 6, 1));
+      __publicField(this, "healthBar", new ResourceBar(resourceTypeEnum.ENEMY_HEART, 12, 12, 325, 0, 12, 1));
+      __publicField(this, "manaBar", new ResourceBar(resourceTypeEnum.ENEMY_MANA, 6, 6, 115, 0, 6, 1));
       __publicField(this, "gameObj", add(gameObjConfigs.enemyChar.gameObjComps));
       this.opponent = opponent;
       this.name = name;
@@ -2641,7 +2653,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       this.spell = spell;
       this.player = player2;
       this.gameObj = add(gameObjConfigs.spellButton);
-      this.gameObj.use(text(this.spell.name, { size: 19 }));
+      this.gameObj.use(text(`${this.spell.cost} ${this.spell.name} ${this.spell.damage}`, { size: 15 }));
       this.addMouseInteractions();
     }
     addMouseInteractions() {
@@ -2652,10 +2664,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }, () => this.gameObj.scaleTo(1));
       this.gameObj.clicks(() => {
         if (this.active && this.player.manaBar.enoughResAvailable(this.spell.cost)) {
-          this.active = false;
-          this.gameObj.color = rgb(160, 160, 160);
-          this.gameObj.scaleTo(1);
-          this.spell.spellCast(this.player);
+          if (this.spell.spellCast(this.player)) {
+            this.active = false;
+            this.gameObj.color = rgb(160, 160, 160);
+            this.gameObj.scaleTo(1);
+          }
         }
       });
     }
@@ -2717,8 +2730,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var Player = class {
     constructor(opponent) {
       __publicField(this, "spellBook", globalSpellBook);
-      __publicField(this, "healthBar", new ResourceBar(resourceTypeEnum.PLAYER_HEART, 12, 325, 0, 12, 1));
-      __publicField(this, "manaBar", new ResourceBar(resourceTypeEnum.PLAYER_MANA, 6, 115, 0, 6, 1));
+      __publicField(this, "healthBar", new ResourceBar(resourceTypeEnum.PLAYER_HEART, 12, 12, 325, 0, 12, 1));
+      __publicField(this, "manaBar", new ResourceBar(resourceTypeEnum.PLAYER_MANA, 6, 6, 115, 0, 6, 1));
       __publicField(this, "spellBar", new SpellBar(this));
       __publicField(this, "gameObj", add(gameObjConfigs.playerChar.gameObjComps));
       this.opponent = opponent;

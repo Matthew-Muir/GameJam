@@ -1,6 +1,6 @@
 import "../kaboom";
 
-export function spellCastDesc(player, spell) {
+export function spellCastDesc(player, spellDesc) {
 
   //hide buttons
   player.spellBar.changeVisibility();
@@ -8,7 +8,7 @@ export function spellCastDesc(player, spell) {
   //output spell description
   const battleText = add([
     pos(30, 400),
-    text(spell.description, {
+    text(spellDesc, {
       size: 20,
       width: 600,
     }),

@@ -12,11 +12,6 @@ const battlefield = new Battlefield();
 enemy.opponent = player;
 
 
-
-
-
-
-
 /*
 Give mana based on turn number
 each time a player cast a spell. check if out of mana or cast pass-turn or if a players health is 0.
@@ -33,10 +28,10 @@ check health
 
 /*
 TO DO
-~ Spells need to inform player of their cost, dmg, and description.
-~ Heal spells shouldn't cast if player is already full health.
+~ Spells need to inform player of their description.
 ~ Make AI for opponent to take their turn.
-~ Craft pass button
+~ Make a turn system. WIP
+
 
 
 */

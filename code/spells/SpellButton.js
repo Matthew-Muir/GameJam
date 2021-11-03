@@ -9,7 +9,7 @@ export class SpellButton {
     this.spell = spell;
     this.player = player;
     this.gameObj = add(gameObjConfigs.spellButton);
-    this.gameObj.use(text(this.spell.name, { size: 19 }));
+    this.gameObj.use(text(`${this.spell.cost} ${this.spell.name} ${this.spell.damage}`, { size: 15 }));
     this.addMouseInteractions();
 
 
@@ -28,10 +28,12 @@ export class SpellButton {
     //UI prevent user from clicking a spell twice
     this.gameObj.clicks(() => {
       if (this.active && this.player.manaBar.enoughResAvailable(this.spell.cost)) {
-        this.active = false;
-        this.gameObj.color = rgb(160, 160, 160);
-        this.gameObj.scaleTo(1);
-        this.spell.spellCast(this.player);
+        if (this.spell.spellCast(this.player)) {
+          this.active = false;
+          this.gameObj.color = rgb(160, 160, 160);
+          this.gameObj.scaleTo(1);
+        }
+
       }
 
     }

@@ -68,6 +68,10 @@ export class SpellBar {
     this.spellBar.forEach((sb) => sb.gameObj.hidden = !sb.gameObj.hidden);
   }
 
+  setAllToActive() {
+    this.spellBar.forEach((sb) => sb.active = true);
+  }
+
 
 }
 

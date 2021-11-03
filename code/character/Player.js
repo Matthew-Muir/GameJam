@@ -7,8 +7,8 @@ import { gameObjConfigs } from "../gameObjConfigs.js";
 
 export class Player {
   spellBook = globalSpellBook;
-  healthBar = new ResourceBar(resourceTypeEnum.PLAYER_HEART, 12, 325, 0, 12, 1);
-  manaBar = new ResourceBar(resourceTypeEnum.PLAYER_MANA, 6, 115, 0, 6, 1);
+  healthBar = new ResourceBar(resourceTypeEnum.PLAYER_HEART, 12,12, 325, 0, 12, 1);
+  manaBar = new ResourceBar(resourceTypeEnum.PLAYER_MANA, 6,6, 115, 0, 6, 1);
   spellBar = new SpellBar(this);
 
   gameObj = add(gameObjConfigs.playerChar.gameObjComps);

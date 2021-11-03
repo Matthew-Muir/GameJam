@@ -5,9 +5,10 @@ import { Resource } from "./Resource.js";
 
 export class ResourceBar {
 
-  constructor(resourceType, totalResources, width, height, cols, rows) {
+  constructor(resourceType, totalResources, maxResources, width, height, cols, rows) {
     this.resourceType = resourceType;
     this.totalResources = totalResources;
+    this.maxResources = maxResources;
 
     this.resourceBar = this.createResourceBar(width, height, rows, cols, gameObjConfigs[this.resourceType].startPos);
 
@@ -94,6 +95,15 @@ export class ResourceBar {
       }
     }
 
+  }
+
+  isResourceFull() {
+    if (this.totalResources == this.maxResources) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 
 
